@@ -15,7 +15,7 @@ if (!$result) {
     die("Error en la consulta SQL: " . $conn->error);
 }
 ?>
-
+// Cambio desde el nuevo equipo
 <!DOCTYPE html>
 <html lang="es">
 <head>
