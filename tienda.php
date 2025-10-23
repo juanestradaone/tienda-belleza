@@ -15,6 +15,8 @@ if (!$result) {
     die("Error en la consulta SQL: " . $conn->error);
 }
 ?>
+
+//--------------------------------- HTML Y CSS MEJORADOS ---------------------------------//
 <!DOCTYPE html>
 <html lang="es">
 <head>
