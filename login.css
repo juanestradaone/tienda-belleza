@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to bottom right, #ffd1dc, #fff0f5);
+    background: linear-gradient(to bottom right, #fa09aa, #fff0f5);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-    background-color: #fff;
+    background-color: #000000;
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(255, 0, 204, 0.3);
     padding: 40px 30px;
