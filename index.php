@@ -1,3 +1,18 @@
+<?php
+session_start();
+
+// Si el usuario ya inició sesión, lo redirigimos a la tienda
+if (isset($_SESSION['usuario'])) {
+    header("Location: tienda.php");
+    exit;
+}
+
+// Capturar mensajes de login o registro (opcionales)
+$mensaje = "";
+if (isset($_GET['msg'])) {
+    $mensaje = htmlspecialchars($_GET['msg']);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,6 +25,9 @@
 
 <body>
     <div class="container">
+        <?php if (!empty($mensaje)): ?>
+            <p class="mensaje"><?= $mensaje ?></p>
+        <?php endif; ?>
 
         <!-- LOGIN -->
         <form method="POST" action="login.php" class="formulario active" id="login-form">
@@ -43,7 +61,6 @@
             <button type="submit">Enviar enlace de recuperación</button>
             <p>Volver a <a href="#login-form">iniciar sesión</a></p>
         </form>
-
     </div>
 
     <script src="script.js"></script>

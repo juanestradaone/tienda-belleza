@@ -532,21 +532,22 @@ if (!$result) {
                     
                     <div class="etiqueta-nuevo">✨ Nuevo</div>
                     
+                    <?php
+                        $imagen = !empty($row['imagen']) ? 'uploads/' . $row['imagen'] : 'imagenes/producto_default.jpg';
+                    ?>
                     <div class="producto-imagen">
-                        <img src="imagenes/producto_default.jpg" alt="<?php echo htmlspecialchars($row['nombre_producto']); ?>" loading="lazy">
+                        <img src="<?php echo htmlspecialchars($imagen); ?>" 
+                             alt="<?php echo htmlspecialchars($row['nombre_producto']); ?>" 
+                             loading="lazy">
                     </div>
 
                     <div class="producto-info">
                         <span class="categoria-badge"><?php echo htmlspecialchars($row['categoria_producto']); ?></span>
-                        
                         <h3><?php echo htmlspecialchars($row['nombre_producto']); ?></h3>
-                        
                         <p class="producto-descripcion"><?php echo htmlspecialchars($row['descripcion']); ?></p>
-
                         <div class="precio-seccion">
                             <span class="precio-actual">$<?php echo number_format($row['precio_producto'], 0, ',', '.'); ?></span>
                         </div>
-
                         <form method="POST" action="carrito.php" class="form-agregar">
                             <input type="hidden" name="id_producto" value="<?php echo $row['id_producto']; ?>">
                             <button type="submit" class="btn-agregar">🛒 Agregar al Carrito</button>
@@ -642,3 +643,70 @@ if (!$result) {
 
 </body>
 </html>
+<?php
+include 'conexion.php'; // tu conexion mysqli ($conn)
+
+// Consulta segura (SELECT no necesita bind si no hay parámetros externos)
+$sql = "SELECT * FROM productos WHERE activo = 1 ORDER BY id_producto DESC";
+$result = $conn->query($sql);
+
+if ($result && $result->num_rows > 0) {
+    echo '<div class="productos-grid">';
+    while ($row = $result->fetch_assoc()) {
+        // Mapear columnas según tu schema
+        $id       = (int)$row['id_producto'];
+        $nombre   = htmlspecialchars($row['nombre_producto']);
+        $precio   = number_format($row['precio_producto'], 0, ',', '.');
+        $desc     = htmlspecialchars($row['descripcion']);
+        $stock    = (int)$row['cantidad_disponible'];
+        $categoria= htmlspecialchars($row['categoria_producto']);
+
+        // Ruta de imagen: ajusta según dónde guardes (uploads/productos o imagenes/)
+        // Si tienes campo 'imagen' en la BD, úsalo; si no, genera nombre por convención.
+        $imagenArchivo = !empty($row['imagen']) ? $row['imagen'] : 'producto_default.jpg';
+        // Si guardas rutas relativas como 'uploads/productos/archivo.jpg' usa $imagenPath = $imagenArchivo;
+        $imagenPath = 'uploads/productos/' . $imagenArchivo;
+
+        // Si la imagen no existe, fallback a logo
+        if (!file_exists($imagenPath)) {
+            $imagenPath = 'imagenes/producto_default.jpg';
+        }
+
+        // Mostrar tarjeta
+        echo '<div class="producto-card" data-categoria="'. $categoria .'">';
+            echo '<div class="producto-imagen"><img src="'. $imagenPath .'" alt="'. $nombre .'" loading="lazy"></div>';
+            echo '<div class="producto-info">';
+                echo '<span class="categoria-badge">'. $categoria .'</span>';
+                echo '<h3>'. $nombre .'</h3>';
+                echo '<p class="producto-descripcion">'. $desc .'</p>';
+
+                // Precio y stock
+                echo '<div class="precio-seccion">';
+                    echo '<span class="precio-actual">$'. $precio .'</span>';
+                    if ($stock <= 0) {
+                        echo '<span class="stock-info bajo">Agotado</span>';
+                    } else if ($stock < 5) {
+                        echo '<span class="stock-info bajo">Pocas unidades</span>';
+                    } else {
+                        echo '<span class="stock-info">Disponible</span>';
+                    }
+                echo '</div>';
+
+                // Formulario para agregar al carrito (deshabilitar si no hay stock)
+                echo '<form method="POST" action="agregar_carrito.php" class="form-agregar">';
+                    echo '<input type="hidden" name="id_producto" value="'. $id .'">';
+                    echo '<input type="number" name="cantidad" value="1" min="1" max="'. $stock .'" style="width:70px;margin-right:8px;">';
+                    $disabled = ($stock <= 0) ? 'disabled' : '';
+                    echo '<button type="submit" class="btn-agregar" '. $disabled .'>🛒 Agregar al carrito</button>';
+                echo '</form>';
+
+            echo '</div>';
+        echo '</div>';
+    }
+    echo '</div>'; // .productos-grid
+} else {
+    echo '<div class="sin-productos"><h3>🚫 Sin Productos Disponibles</h3><p>Regresa más tarde, estamos actualizando el catálogo.</p></div>';
+}
+
+$conn->close();
+?>

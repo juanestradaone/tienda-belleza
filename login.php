@@ -2,12 +2,13 @@
 session_start();
 include("conexion.php");
 
-// Activar errores para depurar si algo falla
+// Activar errores para depuración
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email    = $_POST['email'];
+    // Filtrar el correo
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
 
     // Consulta segura con prepare()
@@ -20,32 +21,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
 
+        // Verificar la contraseña cifrada
         if (password_verify($password, $user['contrasena'])) {
-            // Iniciar sesión
+
+            // Guardar datos en sesión
             $_SESSION['usuario'] = $user['id_usuario'];
             $_SESSION['nombre']  = $user['nombre'];
             $_SESSION['rol']     = $user['rol'];
 
-            echo "<script>
-                    alert('✅ Bienvenido {$user['nombre']}');
-                    window.location.href = 'tienda.php';
-                  </script>";
+            // Redirigir a tienda
+            header("Location: tienda.php");
+            exit;
         } else {
-            echo "<script>
-                    alert('❌ Contraseña incorrecta');
-                    window.location.href = 'index.html';
-                  </script>";
+            header("Location: index.php?msg=❌ Contraseña incorrecta");
+            exit;
         }
     } else {
-        echo "<script>
-                alert('❌ Usuario no encontrado');
-                window.location.href = 'index.html';
-              </script>";
+        header("Location: index.php?msg=❌ Usuario no encontrado");
+        exit;
     }
 
     $stmt->close();
     $conn->close();
 } else {
-    echo "⚠️ No se recibieron datos del formulario.";
+    header("Location: index.php?msg=⚠️ No se recibieron datos del formulario");
+    exit;
 }
 ?>
