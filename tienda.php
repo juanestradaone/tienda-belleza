@@ -16,7 +16,7 @@ if (!$result) {
 }
 ?>
 
-//--------------------------------- HTML Y CSS MEJORADOS ---------------------------------//
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -157,7 +157,7 @@ if (!$result) {
             padding: 0.9rem 1.8rem;
             border: 3px solid #ff69b4;
             background: white;
-            color: #ff1493;
+            color: #ff1493; 
             border-radius: 30px;
             cursor: pointer;
             font-size: 1rem;

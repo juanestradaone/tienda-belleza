@@ -26,12 +26,13 @@ header {
 }
 
 header .logo h1 {
-    color: #ff00cc;
+    color: #f59e0b;
     font-size: 20px;
     letter-spacing: 2px;
     font-weight: 700;
     margin: 0;
 }
+
 
 header .logo p {
     color: #ffccf9;
