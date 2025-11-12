@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-10-2025 a las 20:16:07
+-- Tiempo de generación: 12-11-2025 a las 05:18:48
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,10 +29,18 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `carrito` (
   `id_carrito` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `fecha_actualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id_usuario` int(11) NOT NULL,
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `fecha_actualizacion` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `estado` enum('activo','finalizado') DEFAULT 'activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `carrito`
+--
+
+INSERT INTO `carrito` (`id_carrito`, `id_usuario`, `fecha_creacion`, `fecha_actualizacion`, `estado`) VALUES
+(1, 3, '2025-11-11 22:57:33', '2025-11-11 22:58:03', 'activo');
 
 -- --------------------------------------------------------
 
@@ -42,10 +50,20 @@ CREATE TABLE `carrito` (
 
 CREATE TABLE `detalle_carrito` (
   `id_detalle` int(11) NOT NULL,
-  `id_carrito` int(11) DEFAULT NULL,
-  `id_producto` int(11) DEFAULT NULL,
-  `cantidad` int(11) NOT NULL
+  `id_carrito` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `precio_unitario` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_carrito`
+--
+
+INSERT INTO `detalle_carrito` (`id_detalle`, `id_carrito`, `id_producto`, `cantidad`, `precio_unitario`) VALUES
+(1, 1, 6, 1, NULL),
+(2, 1, 5, 2, NULL),
+(3, 1, 4, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -144,6 +162,7 @@ CREATE TABLE `productos` (
   `cantidad_disponible` int(11) NOT NULL,
   `categoria_producto` varchar(100) DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
+  `imagen` varchar(255) DEFAULT NULL,
   `activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -151,10 +170,13 @@ CREATE TABLE `productos` (
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id_producto`, `nombre_producto`, `precio_producto`, `cantidad_disponible`, `categoria_producto`, `descripcion`, `activo`) VALUES
-(1, 'Shampoo Natural', 25000.00, 15, 'Cabello', 'Shampoo con extracto de aloe vera.', 1),
-(2, 'Crema Hidratante', 18000.00, 10, 'Piel', 'Crema corporal suave y perfumada.', 1),
-(3, 'Aceite Capilar', 22000.00, 20, 'Cabello', 'Aceite reparador con coco y argán.', 1);
+INSERT INTO `productos` (`id_producto`, `nombre_producto`, `precio_producto`, `cantidad_disponible`, `categoria_producto`, `descripcion`, `imagen`, `activo`) VALUES
+(1, 'Shampoo Natural', 25000.00, 15, 'Cabello', 'Shampoo con extracto de aloe vera.', NULL, 1),
+(2, 'Crema Hidratante', 18000.00, 10, 'Piel', 'Crema corporal suave y perfumada.', NULL, 1),
+(3, 'Aceite Capilar', 22000.00, 20, 'Cabello', 'Aceite reparador con coco y argán.', NULL, 1),
+(4, 'aceite capilar', 22000.00, 3, 'cabello', 'aceite capilar para el cabello', 'aceitecapilar.jpg', 1),
+(5, 'Crema Hidratante', 18000.00, 6, 'facial', 'crema para hidratar la piel', 'cremahidratante.jpg', 1),
+(6, 'Shampoo Natural', 25000.00, 8, 'cabello', 'El mejor shampoo para monitos como yo', 'shampoonatural.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -265,13 +287,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `carrito`
 --
 ALTER TABLE `carrito`
-  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_orden`
@@ -307,7 +329,7 @@ ALTER TABLE `ordenes`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
