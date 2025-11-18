@@ -1,0 +1,81 @@
+2025-11-17 17:38:37 - RAW: 
+2025-11-17 17:39:29 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35631001151","topic":"merchant_order"}
+2025-11-17 17:39:30 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"134202318532"},"date_created":"2025-11-17T16:39:29Z","id":126479822122,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-17 17:39:30 - RAW: {"resource":"134202318532","topic":"payment"}
+2025-11-17 17:39:30 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35631001151","topic":"merchant_order"}
+2025-11-17 17:39:31 - 🔥 Pago aprobado para carrito 3
+2025-11-17 17:39:31 - 🔥 Pago aprobado para carrito 3
+2025-11-17 17:40:16 - RAW: {"resource":"134202318532","topic":"payment"}
+2025-11-17 17:40:17 - RAW: {"resource":"134202318532","topic":"payment"}
+2025-11-17 17:50:32 - RAW: {"resource":"133592153799","topic":"payment"}
+2025-11-17 17:50:33 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35655678186","topic":"merchant_order"}
+2025-11-17 17:50:34 - 🔥 Pago aprobado para carrito 2
+2025-11-17 17:50:35 - RAW: {"resource":"134201574662","topic":"payment"}
+2025-11-17 17:50:39 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133592153799"},"date_created":"2025-11-17T16:30:42Z","id":126382675807,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-17 17:50:40 - 🔥 Pago aprobado para carrito 2
+2025-11-17 17:50:44 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35655653432","topic":"merchant_order"}
+2025-11-17 17:50:45 - 🔥 Pago aprobado para carrito 2
+2025-11-17 17:51:02 - RAW: {"resource":"134201318796","topic":"payment"}
+2025-11-18 04:04:43 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671689056","topic":"merchant_order"}
+2025-11-18 04:04:43 - Merchant_order recibido, ignorado.
+2025-11-18 04:04:44 - RAW: {"resource":"133665582129","topic":"payment"}
+2025-11-18 04:04:44 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133665582129"},"date_created":"2025-11-18T03:04:43Z","id":126398324845,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:04:44 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671689056","topic":"merchant_order"}
+2025-11-18 04:04:44 - Merchant_order recibido, ignorado.
+2025-11-18 04:04:44 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671689056","topic":"merchant_order"}
+2025-11-18 04:04:44 - Merchant_order recibido, ignorado.
+2025-11-18 04:04:45 - 🔥 Pago aprobado para carrito 4
+2025-11-18 04:09:07 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35646845295","topic":"merchant_order"}
+2025-11-18 04:09:07 - Merchant_order recibido, ignorado.
+2025-11-18 04:09:08 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133665778305"},"date_created":"2025-11-18T03:09:07Z","id":126495895166,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:09:08 - RAW: {"resource":"133665778305","topic":"payment"}
+2025-11-18 04:09:08 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35646845295","topic":"merchant_order"}
+2025-11-18 04:09:08 - Merchant_order recibido, ignorado.
+2025-11-18 04:13:06 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671778326","topic":"merchant_order"}
+2025-11-18 04:13:06 - Merchant_order recibido, ignorado.
+2025-11-18 04:13:07 - RAW: {"resource":"134275119082","topic":"payment"}
+2025-11-18 04:13:07 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"134275119082"},"date_created":"2025-11-18T03:13:06Z","id":126398469045,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:13:07 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671778326","topic":"merchant_order"}
+2025-11-18 04:13:07 - Merchant_order recibido, ignorado.
+2025-11-18 04:19:53 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35646965135","topic":"merchant_order"}
+2025-11-18 04:19:53 - Merchant_order recibido, ignorado.
+2025-11-18 04:19:53 - RAW: {"resource":"133666144017","topic":"payment"}
+2025-11-18 04:19:53 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133666144017"},"date_created":"2025-11-18T03:19:52Z","id":126496108682,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:19:53 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35646965135","topic":"merchant_order"}
+2025-11-18 04:19:53 - Merchant_order recibido, ignorado.
+2025-11-18 04:21:37 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671883240","topic":"merchant_order"}
+2025-11-18 04:21:37 - Merchant_order recibido, ignorado.
+2025-11-18 04:21:38 - RAW: {"resource":"134275541046","topic":"payment"}
+2025-11-18 04:21:38 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35671883240","topic":"merchant_order"}
+2025-11-18 04:21:38 - Merchant_order recibido, ignorado.
+pi_version":"v1","data":{"id":"134275541046"},"date_created":"2025-11-18T03:21:37Z","id":126496113290,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:33:54 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647095867","topic":"merchant_order"}
+2025-11-18 04:33:54 - Merchant_order recibido, ignorado.
+2025-11-18 04:33:55 - RAW: {"resource":"133667152211","topic":"payment"}
+2025-11-18 04:33:55 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133667152211"},"date_created":"2025-11-18T03:33:54Z","id":126496335106,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:33:55 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647095867","topic":"merchant_order"}
+2025-11-18 04:33:55 - Merchant_order recibido, ignorado.
+2025-11-18 04:41:48 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647178667","topic":"merchant_order"}
+2025-11-18 04:41:48 - Merchant_order recibido, ignorado.
+2025-11-18 04:41:49 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133667333725"},"date_created":"2025-11-18T03:41:48Z","id":126399006389,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:41:49 - RAW: {"resource":"133667333725","topic":"payment"}
+2025-11-18 04:41:49 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647178667","topic":"merchant_order"}
+2025-11-18 04:41:49 - Merchant_order recibido, ignorado.
+2025-11-18 04:53:14 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647271665","topic":"merchant_order"}
+2025-11-18 04:53:14 - Merchant_order recibido, ignorado.
+2025-11-18 04:53:15 - RAW: {"resource":"133667840095","topic":"payment"}
+2025-11-18 04:53:15 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133667840095"},"date_created":"2025-11-18T03:53:14Z","id":126399184557,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:53:15 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647271665","topic":"merchant_order"}
+2025-11-18 04:53:15 - Merchant_order recibido, ignorado.
+2025-11-18 04:53:59 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647279523","topic":"merchant_order"}
+2025-11-18 04:53:59 - Merchant_order recibido, ignorado.
+2025-11-18 04:54:00 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133668029165"},"date_created":"2025-11-18T03:53:59Z","id":126399190577,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 04:54:00 - RAW: {"resource":"133668029165","topic":"payment"}
+2025-11-18 04:54:00 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647279523","topic":"merchant_order"}
+2025-11-18 04:54:00 - Merchant_order recibido, ignorado.
+2025-11-18 05:05:31 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647381883","topic":"merchant_order"}
+2025-11-18 05:05:31 - Merchant_order recibido, ignorado.
+2025-11-18 05:05:32 - RAW: {"action":"payment.created","api_version":"v1","data":{"id":"133668531525"},"date_created":"2025-11-18T04:05:31Z","id":126399343345,"live_mode":true,"type":"payment","user_id":"2992707168"}
+2025-11-18 05:05:32 - RAW: {"resource":"133668531525","topic":"payment"}
+2025-11-18 05:05:32 - RAW: {"resource":"https://api.mercadolibre.com/merchant_orders/35647381883","topic":"merchant_order"}
+2025-11-18 05:05:32 - Merchant_order recibido, ignorado.

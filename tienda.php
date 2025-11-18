@@ -4,7 +4,7 @@ include("conexion.php");
 
 // Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['usuario'])) {
-    header("Location: index.html");
+    header("Location: index.php");
     exit();
 }
 
@@ -25,6 +25,7 @@ if (!$result) {
     <title>Tienda | Belleza y Glamour Angelita</title>
     <link rel="stylesheet" href="style.css">
    <style>
+    
     * {
         margin: 0;
         padding: 0;
@@ -257,6 +258,40 @@ if (!$result) {
             font-size: 1.8rem;
         }
     }
+    /* NOTIFICACIÓN DE PRODUCTO AGREGADO */
+    .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 20, 147, 0.9);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 0 20px #ff69b4;
+    z-index: 3000;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: notiIn 0.4s forwards, notiOut 0.4s forwards 1.8s;
+    }
+
+    /* Animación de entrada */
+    @keyframes notiIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    /* Animación de salida */
+    @keyframes notiOut {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    }
+
 </style>
 
 </head>
@@ -319,8 +354,9 @@ if (!$result) {
                         <div class="precio-seccion">
                             <span class="precio-actual">$<?php echo number_format($row['precio_producto'], 0, ',', '.'); ?></span>
                         </div>
-                        <form method="POST" action="carrito.php" class="form-agregar">
+                        <form method="POST" action="agregar_carrito.php" class="form-agregar">
                             <input type="hidden" name="id_producto" value="<?php echo $row['id_producto']; ?>">
+                            <input type="hidden" name="cantidad" value="1">
                             <button type="submit" class="btn-agregar">🛒 Agregar al Carrito</button>
                         </form>
                     </div>
@@ -376,6 +412,20 @@ if (!$result) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
+          // 🔊 Reproducir sonido — con fallback para navegadores estrictos
+           const sonido = document.getElementById('sonido-carrito');
+            if (sonido) {
+             sonido.currentTime = 0;
+             const playPromise = sonido.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log("⚠ El navegador bloqueó el sonido, intentando desbloquear...");
+                    // Reintento después de una mínima interacción
+                    window.addEventListener('click', () => sonido.play(), { once: true });
+                });
+            }
+        }
             // Crear notificación mejorada
             const notification = document.createElement('div');
             notification.className = 'notification';
@@ -396,13 +446,17 @@ if (!$result) {
     });
 document.addEventListener('DOMContentLoaded', function() {
     // Obtener el contador del carrito
-    const contador = document.querySelector('.contador-carrito');
+    actualizarContador();
+    setInterval(actualizarContador, 5000);
+});
+
 
     // Función para obtener la cantidad actual de productos en el carrito
     function actualizarContador() {
         fetch('obtener_carrito.php') // archivo que devolverá la cantidad
             .then(res => res.json())
             .then(data => {
+                const contador = document.querySelector('.contador-carrito');
                 contador.textContent = data.total_items ?? 0;
             })
             .catch(err => console.error('Error al actualizar el carrito:', err));
@@ -413,9 +467,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // También puedes actualizarlo cada pocos segundos si deseas que esté siempre al día
     setInterval(actualizarContador, 5000);
-});
 
 </script>
+
+<audio id="sonido-carrito" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" type="audio/mpeg">
+</audio>
 
 
 </body>
