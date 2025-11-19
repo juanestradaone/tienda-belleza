@@ -77,7 +77,7 @@ if (empty($items)) {
 $client = new PreferenceClient();
 
 // URLs públicas de ngrok
-$base_url = "https://kaiya-obeliskoid-inocencia.ngrok-free.dev/tienda-belleza";
+$base_url = "https://lennox-unmilitaristic-inspiringly.ngrok-free.dev/tienda-belleza";
 
 try {
     $preference = $client->create([

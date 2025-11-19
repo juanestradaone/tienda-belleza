@@ -1,3 +1,11 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pago Fallido</title>
+
+<style>
 <!-- pago_fallido.php -->
 box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 border-top: 6px solid #d11a2a;
@@ -36,6 +44,7 @@ margin-bottom: 10px;
 <h1>Pago Fallido</h1>
 <p>Tu pago no pudo procesarse. Intenta nuevamente o usa otro método de pago.</p>
 <a href="checkout.php" class="btn">Volver al Pago</a>
+<a href="index.php" class="btn">Volver a la Página Principal</a>
 </div>
 </body>
 </html>
