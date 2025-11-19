@@ -119,6 +119,16 @@ function procesarPago($external_reference, $status, $conn)
     $stmt->execute();
     $stmt->close();
 
+    // Guardar historial de productos
+    $sql = "INSERT INTO carrito_detalle_historial (id_carrito, id_producto, cantidad)
+        SELECT id_carrito, id_producto, cantidad 
+        FROM carrito_detalle WHERE id_carrito = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $external_reference);
+    $stmt->execute();
+    $stmt->close();
+
+
     // 4. Vaciar productos del carrito
     $sql = "DELETE FROM carrito_detalle WHERE id_carrito = ?";
     $stmt = $conn->prepare($sql);

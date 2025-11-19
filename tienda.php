@@ -306,6 +306,7 @@ if (!$result) {
     <nav class="menu">
         <a href="dashboard.php">📍 Inicio</a>
         <a href="tienda.php">🛍️ Productos</a>
+        <a href="historial_pedidos.php"> Historial de pedidos</a>
         <a href="carrito.php" class="carrito-btn">
             🛒 Carrito
             <span class="contador-carrito">0</span>

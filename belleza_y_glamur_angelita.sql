@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-11-2025 a las 05:18:56
+-- Tiempo de generación: 19-11-2025 a las 03:56:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -58,6 +58,19 @@ INSERT INTO `carrito` (`id_carrito`, `id_usuario`, `fecha_creacion`, `fecha_actu
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `carrito_detalle_historial`
+--
+
+CREATE TABLE `carrito_detalle_historial` (
+  `id` int(11) NOT NULL,
+  `id_carrito` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `detalle_carrito`
 --
 
@@ -105,7 +118,10 @@ INSERT INTO `detalle_carrito` (`id_detalle`, `id_carrito`, `id_producto`, `canti
 (36, 12, 4, 1, 22000.00),
 (37, 13, 7, 1, 5000.00),
 (38, 13, 6, 1, 25000.00),
-(39, 13, 5, 1, 18000.00);
+(39, 13, 5, 1, 18000.00),
+(40, 14, 6, 2, 25000.00),
+(41, 14, 5, 2, 18000.00),
+(42, 14, 7, 2, 5000.00);
 
 -- --------------------------------------------------------
 
@@ -224,7 +240,8 @@ INSERT INTO `ordenes` (`id_orden`, `id_usuario`, `id_direccion`, `fecha_compra`,
 (15, 3, NULL, '2025-11-18 03:52:24', 48000.00, '', '133667840095', 'approved', '2992707168-86fda620-4786-4862-8552-a2f09305cd93', 11),
 (16, 3, NULL, '2025-11-18 03:52:57', 48000.00, '', '133667840095', 'approved', '2992707168-869cbc4e-c881-4fe1-a435-f19ce1d062ad', 11),
 (17, 3, NULL, '2025-11-18 03:53:48', 47000.00, '', '133668029165', 'approved', '2992707168-61c2b552-c947-4ef2-acca-a51672cca6f2', 12),
-(18, 3, NULL, '2025-11-18 04:05:15', 48000.00, '', '133668531525', 'approved', '2992707168-6246d10f-4e7d-44d7-90ca-0f9bfe8afba7', 13);
+(18, 3, NULL, '2025-11-18 04:05:15', 48000.00, '', '133668531525', 'approved', '2992707168-6246d10f-4e7d-44d7-90ca-0f9bfe8afba7', 13),
+(19, 3, NULL, '2025-11-19 02:48:51', 96000.00, 'pendiente', NULL, NULL, '2992707168-8701b6a3-5706-41be-9fc5-2ce3503ee012', 14);
 
 -- --------------------------------------------------------
 
@@ -338,6 +355,12 @@ ALTER TABLE `carrito`
   ADD KEY `id_usuario` (`id_usuario`);
 
 --
+-- Indices de la tabla `carrito_detalle_historial`
+--
+ALTER TABLE `carrito_detalle_historial`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
@@ -439,10 +462,16 @@ ALTER TABLE `carrito`
   MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
+-- AUTO_INCREMENT de la tabla `carrito_detalle_historial`
+--
+ALTER TABLE `carrito_detalle_historial`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_orden`
@@ -478,7 +507,7 @@ ALTER TABLE `envios`
 -- AUTO_INCREMENT de la tabla `ordenes`
 --
 ALTER TABLE `ordenes`
-  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`

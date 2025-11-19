@@ -214,6 +214,16 @@ $productos = $stmt->get_result();
             margin: 0 8px;
             font-weight: bold;
         }
+
+        .thumb {
+          width: 60px;
+          height: 60px;
+          object-fit: cover;
+          border: 2px solid #ff33cc;
+          border-radius: 8px;
+          box-shadow: 0 0 8px #ff33cc;
+        }
+
     </style>
 </head>
 <body>
@@ -240,7 +250,7 @@ $productos = $stmt->get_result();
                 echo "
                 <tr data-id='{$row['id_producto']}'>
                     <td>{$row['nombre_producto']}</td>
-                    <td><img src='imagenes/{$row['imagen']}' alt='{$row['nombre_producto']}'></td>
+                    <td><img src='uploads/{$row['imagen']}' alt='{$row['nombre_producto']}' class='thumb'></td>
                     <td>\${$row['precio_producto']}</td>
                     <td class='cantidad'>
                         <button class='menos'>−</button>
