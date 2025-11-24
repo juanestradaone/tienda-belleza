@@ -5,7 +5,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $precio = $_POST['precio'];
     $cantidad = $_POST['cantidad'];
-    $categoria = $_POST['categoria'];
+    // Manejar categorías como checklist (categoria[]) y campo opcional categoria_otro
+    $categoria = '';
+    if (isset($_POST['categoria'])) {
+        if (is_array($_POST['categoria'])) {
+            // unir las categorías seleccionadas con comas
+            $cats = array_map('trim', $_POST['categoria']);
+            $categoria = implode(',', $cats);
+        } else {
+            $categoria = trim($_POST['categoria']);
+        }
+    }
+    if (!empty($_POST['categoria_otro'])) {
+        $otro = trim($_POST['categoria_otro']);
+        if ($otro !== '') {
+            if ($categoria !== '') {
+                $categoria .= ',' . $otro;
+            } else {
+                $categoria = $otro;
+            }
+        }
+    }
+
     $descripcion = $_POST['descripcion'];
 
     // Manejo de la imagen

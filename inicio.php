@@ -125,21 +125,28 @@ session_start();
 		transform: scale(1.05);
 	}
 
-	/* Carrusel específico adaptado */
+	/* Carrusel específico adaptado (responsivo) */
 	.carousel {
 		position: relative;
 		overflow: hidden;
 		border-radius: 20px;
 		box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 		margin: 1rem 0 1.5rem 0;
+		--carousel-height: clamp(180px, 40vw, 420px); /* responsivo: mínimo 180px, máximo 420px */
 	}
 
-	.carousel-track { display:flex; transition: transform 0.6s ease; }
-	.carousel-slide { min-width:100%; }
-	.carousel-slide img { width:100%; height:420px; object-fit:cover; display:block; }
+	.carousel-track { display:flex; transition: transform 0.6s ease; will-change: transform; }
+	.carousel-slide { min-width:100%; display:block; }
+	.carousel-slide img { width:100%; height:var(--carousel-height); object-fit:cover; display:block; }
 
-	.carousel-controls { position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; }
-	.carousel-controls button { background: rgba(0,0,0,0.45); color:#fff; border:none; padding:0.6rem 0.9rem; margin:0 0.6rem; border-radius:8px; cursor:pointer; pointer-events:all; }
+	/* Controles y botones */
+	.carousel-controls { position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; padding:0 0.5rem; }
+	.carousel-controls button { background: rgba(0,0,0,0.45); color:#fff; border:none; padding:0.6rem 0.9rem; margin:0 0.6rem; border-radius:8px; cursor:pointer; pointer-events:all; font-size:1.4rem; }
+
+	/* Indicadores (puntos) */
+	.carousel-indicators { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; display:flex; gap:8px; z-index: 10; }
+	.carousel-indicators button { width:10px; height:10px; border-radius:50%; border:none; background: rgba(255,255,255,0.45); cursor:pointer; padding:0; }
+	.carousel-indicators button.active { background: linear-gradient(135deg,#ff1493,#ff69b4); box-shadow: 0 0 8px #ff69b4; }
 
 	.empresa-info {
 		display: grid;
@@ -202,7 +209,7 @@ session_start();
 		<p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
 	</div>
 	<nav class="menu">
-		<a href="inicio.php">📍 Inicio</a>
+		<a href="dashboard.php">📍 Inicio</a>
 		<a href="tienda.php">🛍️ Productos</a>
 		<a href="historial_pedidos.php"> Historial de pedidos</a>
 		<a href="carrito.php" class="carrito-btn">
@@ -227,10 +234,11 @@ session_start();
 				<img src="uploads/shampoonatural.jpg" alt="Shampoo natural - Belleza y Glamour Angelita">
 			</div>
 		</div>
-		<div class="carousel-controls">
-			<button id="prev">‹</button>
-			<button id="next">›</button>
-		</div>
+			<div class="carousel-controls">
+				<button id="prev" aria-label="Anterior">‹</button>
+				<button id="next" aria-label="Siguiente">›</button>
+			</div>
+			<div class="carousel-indicators" id="indicators" aria-hidden="false"></div>
 	</div>
 
 	<!-- Información de la empresa y mapa -->
@@ -278,15 +286,32 @@ session_start();
 	// Carrusel simple con autoplay
 	(function(){
 		const track = document.getElementById('track');
-		const slides = Array.from(track.children);
+		const slides = Array.from(track.querySelectorAll('.carousel-slide'));
 		const prev = document.getElementById('prev');
 		const next = document.getElementById('next');
+		const indicators = document.getElementById('indicators');
 		let index = 0;
 		const total = slides.length;
+
+		// Crear indicadores dinámicamente
+		for (let i = 0; i < total; i++) {
+			const btn = document.createElement('button');
+			btn.setAttribute('aria-label', 'Ir al slide ' + (i+1));
+			if (i === 0) btn.classList.add('active');
+			btn.addEventListener('click', () => goTo(i));
+			indicators.appendChild(btn);
+		}
+
+		function setActiveIndicator(i) {
+			const dots = indicators.querySelectorAll('button');
+			dots.forEach(d => d.classList.remove('active'));
+			if (dots[i]) dots[i].classList.add('active');
+		}
 
 		function goTo(i){
 			index = (i + total) % total;
 			track.style.transform = `translateX(-${index * 100}% )`;
+			setActiveIndicator(index);
 		}
 
 		prev.addEventListener('click', ()=> goTo(index-1));
@@ -298,6 +323,33 @@ session_start();
 		const carousel = document.getElementById('carousel');
 		carousel.addEventListener('mouseenter', ()=> clearInterval(autoplay));
 		carousel.addEventListener('mouseleave', ()=> autoplay = setInterval(()=> goTo(index+1), 4000));
+
+		// Soporte táctil (swipe)
+		let startX = 0;
+		let deltaX = 0;
+		carousel.addEventListener('touchstart', (e) => {
+			startX = e.touches[0].clientX;
+			deltaX = 0;
+			clearInterval(autoplay);
+		}, {passive:true});
+
+		carousel.addEventListener('touchmove', (e) => {
+			deltaX = e.touches[0].clientX - startX;
+		}, {passive:true});
+
+		carousel.addEventListener('touchend', () => {
+			if (Math.abs(deltaX) > 40) {
+				if (deltaX < 0) goTo(index+1); else goTo(index-1);
+			}
+			autoplay = setInterval(()=> goTo(index+1), 4000);
+		});
+
+		// Teclado (arrow left/right)
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowLeft') goTo(index-1);
+			if (e.key === 'ArrowRight') goTo(index+1);
+		});
+
 	})();
 
 	// Contador de carrito (se actualiza con obtener_carrito.php)
