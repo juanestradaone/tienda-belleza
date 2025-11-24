@@ -304,7 +304,7 @@ if (!$result) {
         <p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
     </div>
     <nav class="menu">
-        <a href="dashboard.php">📍 Inicio</a>
+        <a href="inicio.php">📍 Inicio</a>
         <a href="tienda.php">🛍️ Productos</a>
         <a href="historial_pedidos.php"> Historial de pedidos</a>
         <a href="carrito.php" class="carrito-btn">
