@@ -3,7 +3,7 @@ session_start();
 
 // Si el usuario ya inició sesión, lo redirigimos a la tienda
 if (isset($_SESSION['usuario'])) {
-    header("Location: tienda.php");
+    header("Location: inicio.php");
     exit;
 }
 
