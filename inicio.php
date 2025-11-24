@@ -209,7 +209,7 @@ session_start();
 		<p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
 	</div>
 	<nav class="menu">
-		<a href="dashboard.php">📍 Inicio</a>
+		<a href="inicio.php">📍 Inicio</a>
 		<a href="tienda.php">🛍️ Productos</a>
 		<a href="historial_pedidos.php"> Historial de pedidos</a>
 		<a href="carrito.php" class="carrito-btn">
@@ -261,7 +261,7 @@ session_start();
 		<div class="map-card">
 			<h3 style="color:#fff; margin:0 0 0.6rem 0;">Nuestra ubicación</h3>
 			<div class="map-wrapper">
-				<!-- Reemplaza el parámetro `q` por la dirección real o coordenadas -->
+				<!-- Reemplaza el parámetro q por la dirección real o coordenadas -->
 				<iframe src="https://www.google.com/maps/embed?pb=!4v1763566737988!6m8!1m7!1so5Xw_dtelpeVUZtpW6aj4A!2m2!1d4.442859439867629!2d-75.20244994875287!3f90.94436917003374!4f9.320920750015588!5f0.7820865974627469" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 			</div>
 		</div>
@@ -310,7 +310,7 @@ session_start();
 
 		function goTo(i){
 			index = (i + total) % total;
-			track.style.transform = `translateX(-${index * 100}% )`;
+			track.style.transform = `translateX(-${index * 100}%)`;
 			setActiveIndicator(index);
 		}
 
@@ -377,4 +377,3 @@ session_start();
 
 </body>
 </html>
-
