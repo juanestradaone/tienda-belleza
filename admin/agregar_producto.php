@@ -106,6 +106,7 @@
 
     <button type="submit">Guardar producto</button>
 </form>
+//cambio realizado
 
 </body>
 </html>
