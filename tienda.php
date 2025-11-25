@@ -52,18 +52,31 @@ if (!$result) {
         border-bottom: 2px solid #ff1493;
     }
 
-    .logo h1 {
-        font-size: 2rem;
-        letter-spacing: 1px;
-        text-shadow: 0 0 10px #ff1493, 0 0 20px #ff69b4;
-        animation: glow 3s infinite alternate;
-    }
+    /* TÍTULO DEL HEADER */
+.logo h1 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(255, 20, 147, 0.6), 
+                 0 0 40px rgba(255, 105, 180, 0.4),
+                 0 0 60px rgba(255, 20, 147, 0.2);
+    animation: glow 3s infinite alternate;
+    font-weight: 900;
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 15px #ff1493);
+}
 
-    @keyframes glow {
-        from { text-shadow: 0 0 10px #ff1493; }
-        to { text-shadow: 0 0 20px #ff69b4, 0 0 30px #ff1493; }
+@keyframes glow {
+    from { 
+        filter: drop-shadow(0 0 10px #ff1493) drop-shadow(0 0 20px #ff69b4);
     }
-
+    to { 
+        filter: drop-shadow(0 0 25px #ff69b4) drop-shadow(0 0 40px #ff1493);
+    }
+}
     .menu {
         display: flex;
         gap: 1.2rem;
@@ -229,12 +242,31 @@ if (!$result) {
         box-shadow: 0 -4px 20px rgba(255, 20, 147, 0.3);
     }
 
-    .footer-title {
-        font-size: 1.8rem;
-        color: #ff69b4;
-        text-shadow: 0 0 10px #ff69b4;
-        margin-bottom: 1rem;
+    /* TÍTULO DEL FOOTER */
+.footer-title {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 15px #ff1493) drop-shadow(0 0 25px #ff69b4);
+    animation: glowFooter 4s infinite alternate;
+}
+
+@keyframes glowFooter {
+    from { 
+        filter: drop-shadow(0 0 10px #ff1493) drop-shadow(0 0 20px #ff69b4);
+        opacity: 0.9;
     }
+    to { 
+        filter: drop-shadow(0 0 20px #ff69b4) drop-shadow(0 0 35px #ff1493);
+        opacity: 1;
+    }
+}
 
     .redes-sociales a {
         color: #fff;
