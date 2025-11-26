@@ -152,6 +152,69 @@ if (!$result) {
         box-shadow: 0 0 20px #ff69b4;
         transform: scale(1.05);
     }
+  
+/* Contenedor del buscador */
+.search-container {
+    position: relative;
+    width: 260px;
+    transition: width 0.3s ease;
+}
+
+/* Animación al enfocarse */
+.search-container.active {
+    width: 350px;
+}
+
+/* Input del buscador */
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border: 2px solid #ff0099;
+    background: #0d0d0d;
+    border-radius: 30px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    box-shadow: 0 0 10px #ff0099aa;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Glow al activar */
+.search-container.active .search-input {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff0099ee;
+}
+
+/* Botón limpiar ❌ */
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #ff66c4;
+    cursor: pointer;
+    display: none;
+}
+
+/* Result Box */
+.no-results {
+    margin-top: 10px;
+    color: #ff66c4;
+    font-size: 14px;
+    display: none;
+    text-shadow: 0 0 5px #ff0099;
+}
+.highlight {
+    background-color: #ff0099;
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+
 
     /* PRODUCTOS */
     .contenedor-productos {
@@ -180,7 +243,7 @@ if (!$result) {
     }
 
     .producto-imagen img {
-        width: 100%;
+        width: auto;
         height: 280px;
         object-fit: cover;
         transition: all 0.5s ease;
@@ -243,21 +306,21 @@ if (!$result) {
     }
 
     /* TÍTULO DEL FOOTER */
-.footer-title {
-    font-size: 1.8rem;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    filter: drop-shadow(0 0 15px #ff1493) drop-shadow(0 0 25px #ff69b4);
-    animation: glowFooter 4s infinite alternate;
-}
+    .footer-title {
+       font-size: 1.8rem;
+       letter-spacing: 2px;
+       background: linear-gradient(135deg, #ff1493, #ff69b4, #ff1493);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+       background-clip: text;
+       margin-bottom: 1rem;
+       font-weight: 900;
+       text-transform: uppercase;
+       filter: drop-shadow(0 0 15px #ff1493) drop-shadow(0 0 25px #ff69b4);
+       animation: glowFooter 4s infinite alternate;
+    }
 
-@keyframes glowFooter {
+  @keyframes glowFooter {
     from { 
         filter: drop-shadow(0 0 10px #ff1493) drop-shadow(0 0 20px #ff69b4);
         opacity: 0.9;
@@ -357,10 +420,16 @@ if (!$result) {
         <button class="filtro-btn" onclick="filtrarProductos('maquillaje')">💄 Maquillaje</button>
         <button class="filtro-btn" onclick="filtrarProductos('facial')">🧴 Facial</button>
         <button class="filtro-btn" onclick="filtrarProductos('corporal')">💆🏻‍♀️ Corporal</button>
-        <button class="filtro-btn" onclick="filtrarProductos('unas')">💅 Uñas</button>
+        <button class="filtro-btn" onclick="filtrarProductos('uñas')">💅 Uñas</button>
         <button class="filtro-btn" onclick="filtrarProductos('cabello')">💇‍♀️ Cabello</button>
-    </div>
-</section>
+        
+    <div class="search-container" id="searchBox">
+    <input type="text" id="buscador" class="search-input" placeholder="🔍Buscar productos...">
+    <button id="clearBtn" class="clear-btn">❌</button>
+</div>
+
+<p id="noResults" class="no-results">No se encontraron resultados</p>
+
 
 <!-- PRODUCTOS -->
 <div class="contenedor-productos">
@@ -500,6 +569,111 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // También puedes actualizarlo cada pocos segundos si deseas que esté siempre al día
     setInterval(actualizarContador, 5000);
+
+
+    
+// ------- Animación al abrir -------
+const searchInput = document.getElementById("buscador");
+const searchContainer = document.getElementById("searchBox");
+const clearBtn = document.getElementById("clearBtn");
+const noResultsText = document.getElementById("noResults");
+
+// Activar animación al enfocar
+searchInput.addEventListener("focus", () => {
+    searchContainer.classList.add("active");
+});
+
+// Quitar animación si el input queda vacío
+searchInput.addEventListener("blur", () => {
+    if (searchInput.value === "") {
+        searchContainer.classList.remove("active");
+    }
+});
+
+// ------- Botón ❌ limpiar -------
+searchInput.addEventListener("input", () => {
+    clearBtn.style.display = searchInput.value.length > 0 ? "block" : "none";
+});
+
+clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    clearBtn.style.display = "none";
+    noResultsText.style.display = "none";
+    filterProducts(""); 
+});
+
+// ------- Filtro + mensaje "No se encontraron resultados" -------
+function filterProducts(query) {
+    const cards = document.querySelectorAll(".producto-card");
+    let visibles = 0;
+
+    cards.forEach(card => {
+        const name = card.querySelector("h3").textContent.toLowerCase();
+
+        if (name.includes(query.toLowerCase())) {
+            card.style.display = "block";
+            visibles++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    // Mensaje de "No se encontraron resultados"
+    noResultsText.style.display = (visibles === 0 && query !== "") ? "block" : "none";
+}
+
+// Filtrar a medida que se escribe
+searchInput.addEventListener("input", () => {
+    filterProducts(searchInput.value);
+});
+
+// ------- Filtro + mensaje "No se encontraron resultados" -------
+function filterProducts(query) {
+    const cards = document.querySelectorAll(".producto-card");
+    let visibles = 0;
+
+    cards.forEach(card => {
+        const titleElement = card.querySelector("h3");
+        const originalText = titleElement.dataset.original || titleElement.textContent;
+
+        // Guardar texto original (solo una vez)
+        if (!titleElement.dataset.original) {
+            titleElement.dataset.original = originalText;
+        }
+
+        // Si el campo está vacío → mostrar todos y restaurar texto
+        if (query.trim() === "") {
+            titleElement.innerHTML = originalText;
+            card.style.display = "block";
+            visibles++;
+            return;
+        }
+
+        const lowerOriginal = originalText.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+
+        // Coincidencia
+        if (lowerOriginal.includes(lowerQuery)) {
+            card.style.display = "block";
+            visibles++;
+
+            // Resaltar coincidencias
+            const highlighted = originalText.replace(
+                new RegExp(query, "gi"),
+                match => `<span class="highlight">${match}</span>`
+            );
+
+            titleElement.innerHTML = highlighted;
+        } else {
+            card.style.display = "none";
+            titleElement.innerHTML = originalText;
+        }
+    });
+
+    // Mostrar mensaje "No se encontraron resultados"
+    noResultsText.style.display = (visibles === 0) ? "block" : "none";
+}
+
 
 </script>
 
