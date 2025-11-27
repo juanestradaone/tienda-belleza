@@ -3,10 +3,10 @@ session_start();
 include("conexion.php");
 
 // Verificar si el usuario ha iniciado sesión
-//if (!isset($_SESSION['usuario'])) {
-    //header("Location: index.php");
-    //exit();
-//}
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
 
 // Consultar productos activos
 $sql = "SELECT * FROM productos WHERE activo = 1 ORDER BY id_producto DESC";
