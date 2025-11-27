@@ -89,7 +89,7 @@ if (!$result) {
         text-decoration: none;
         padding: 0.8rem 1.5rem;
         background: linear-gradient(135deg, #ff1493, #ff69b4);
-        border-radius: 25px;
+        border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
         border: 2px solid transparent;
@@ -139,7 +139,7 @@ if (!$result) {
         border: 2px solid #ff69b4;
         background: transparent;
         color: #ff69b4;
-        border-radius: 25px;
+        border-radius: 8px;
         cursor: pointer;
         font-size: 1rem;
         font-weight: 600;
@@ -282,7 +282,7 @@ if (!$result) {
         background: linear-gradient(135deg, #ff1493, #ff69b4);
         color: white;
         border: none;
-        border-radius: 15px;
+        border-radius: 8px;
         font-size: 1.1rem;
         font-weight: bold;
         cursor: pointer;
