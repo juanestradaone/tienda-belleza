@@ -248,6 +248,59 @@ session_start();
 
 	@keyframes notiIn { to { opacity: 1; transform: translateY(0); } }
 	@keyframes notiOut { to { opacity: 0; transform: translateY(-20px); } }
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.user-button {
+    background: #111;
+    padding: 10px 15px;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid #ff0080;
+    box-shadow: 0 0 12px rgba(255,0,130,0.5);
+    transition: 0.3s;
+}
+
+.user-button:hover {
+    box-shadow: 0 0 18px rgba(255,0,160,0.9);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background: #1b1b1b;
+    width: 200px;
+    padding: 10px 0;
+    border-radius: 12px;
+    border: 1px solid #ff0080;
+    box-shadow: 0 0 20px rgba(255,0,150,0.5);
+    display: none;
+}
+
+.user-dropdown.active {
+    display: block;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 12px 18px;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,0,130,0.2);
+    transition: 0.3s;
+}
+
+.user-dropdown a:hover {
+    background: #ff0080;
+}
+
 
 	</style>
 </head>
@@ -262,13 +315,49 @@ session_start();
 	<nav class="menu">
 		<a href="inicio.php">📍 Inicio</a>
 		<a href="tienda.php">🛍️ Productos</a>
-		<a href="historial_pedidos.php"> Historial de pedidos</a>
 		<a href="carrito.php" class="carrito-btn">
 			🛒 Carrito
 			<span class="contador-carrito">0</span>
 		</a>
-		<a href="logout.php">🚪 Salir</a>
+
 	</nav>
+<?php
+$nombre_usuario = $_SESSION['nombre'] ?? null;
+?>
+
+<div class="user-menu">
+    <div class="user-button" onclick="toggleMenu()">
+        <span class="icono-usuario">👤</span>
+        <div class="texto-usuario">
+            <?php if ($nombre_usuario): ?>
+                <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
+                <span>Mi cuenta</span>
+            <?php else: ?>
+                <strong>¡Hola!</strong> Inicia sesión<br>
+                <span>Mi cuenta</span>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <div class="user-dropdown" id="dropdownMenu">
+        <a href="index.php">🏠 Inicio</a>
+        <a href="perfil.php">👤 Mi Perfil</a>
+        <a href="ayuda.php">❓ Ayuda</a>
+
+        <?php if ($nombre_usuario): ?>
+            <a href="logout.php">🚪 Cerrar sesión</a>
+        <?php else: ?>
+            <a href="login.php">➡️ Iniciar Sesión</a>
+        <?php endif; ?>
+    </div>
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("dropdownMenu").classList.toggle("active");
+}
+</script>
+
 </header>
 
 <main class="hero">

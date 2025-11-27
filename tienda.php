@@ -426,7 +426,6 @@ if (!$result) {
             🛒 Carrito
             <span class="contador-carrito">0</span>
         </a>
-        <a href="logout.php">🚪 Salir</a>
     </nav>
 </header>
 

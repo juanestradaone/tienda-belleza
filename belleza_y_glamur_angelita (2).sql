@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-11-2025 a las 12:34:52
+-- Tiempo de generación: 27-11-2025 a las 16:00:46
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -82,6 +82,13 @@ CREATE TABLE `detalle_carrito` (
   `cantidad` int(11) NOT NULL,
   `precio_unitario` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_carrito`
+--
+
+INSERT INTO `detalle_carrito` (`id_detalle`, `id_carrito`, `id_producto`, `cantidad`, `precio_unitario`) VALUES
+(50, 15, 38, 1, 12000.00);
 
 -- --------------------------------------------------------
 
@@ -470,7 +477,7 @@ ALTER TABLE `carrito_detalle_historial`
 -- AUTO_INCREMENT de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_orden`
