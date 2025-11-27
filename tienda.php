@@ -3,10 +3,10 @@ session_start();
 include("conexion.php");
 
 // Verificar si el usuario ha iniciado sesión
-if (!isset($_SESSION['usuario'])) {
-    header("Location: index.php");
-    exit();
-}
+//if (!isset($_SESSION['usuario'])) {
+    //header("Location: index.php");
+    //exit();
+//}
 
 // Consultar productos activos
 $sql = "SELECT * FROM productos WHERE activo = 1 ORDER BY id_producto DESC";
@@ -342,6 +342,26 @@ if (!$result) {
         color: #ff69b4;
         text-shadow: 0 0 10px #ff69b4;
     }
+    /* Ajustes para iconos SVG en footer */
+    .redes-sociales {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    .redes-sociales a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: transparent;
+        margin: 0 0.4rem;
+    }
+    .redes-sociales a svg { width:22px; height:22px; display:block; }
+    .sr-only { position: absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
     /* RESPONSIVE */
     @media (max-width: 768px) {
@@ -480,9 +500,31 @@ if (!$result) {
     <p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
     <p>Contáctanos - 311-620-8892</p>
     <div class="redes-sociales">
-        <a href="https://www.facebook.com/profile.php?id=61570566590673&mibextid=ZbWKwL" target="_blank">📘 Facebook</a>
-        <a href="https://www.instagram.com/" target="_blank">📸 Instagram</a>
-        <a href="https://twitter.com/" target="_blank">🐦 Twitter</a>
+        <a href="https://www.facebook.com/profile.php?id=61570566590673&mibextid=ZbWKwL" target="_blank" aria-label="Facebook" title="Facebook">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+                <path fill="#1877F2" d="M22 12C22 6.48 17.52 2 12 2S2 6.48 2 12c0 4.99 3.66 9.12 8.44 9.88v-6.99H7.9v-2.89h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 2.89h-2.3V21.88C18.34 21.12 22 16.99 22 12z"/>
+            </svg>
+            <span class="sr-only">Facebook</span>
+        </a>
+        <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram" title="Instagram">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+                <defs>
+                    <linearGradient id="igGrad2" x1="0" x2="1" y1="0" y2="1">
+                        <stop offset="0%" stop-color="#feda75"/>
+                        <stop offset="50%" stop-color="#d62976"/>
+                        <stop offset="100%" stop-color="#962fbf"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#igGrad2)" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.5A4.5 4.5 0 1 0 16.5 13 4.5 4.5 0 0 0 12 8.5zm5.5-.75a1.125 1.125 0 1 1-1.125 1.125A1.125 1.125 0 0 1 17.5 7.75z"/>
+            </svg>
+            <span class="sr-only">Instagram</span>
+        </a>
+        <a href="https://twitter.com/" target="_blank" aria-label="Twitter" title="Twitter">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+                <path fill="#1DA1F2" d="M22.46 6c-.77.35-1.6.58-2.46.69a4.26 4.26 0 0 0 1.86-2.35 8.53 8.53 0 0 1-2.7 1.03 4.24 4.24 0 0 0-7.23 3.87A12.01 12.01 0 0 1 3.15 4.6a4.24 4.24 0 0 0 1.31 5.66c-.67-.02-1.3-.21-1.85-.51v.05c0 2.02 1.44 3.7 3.36 4.08-.35.1-.72.15-1.1.15-.27 0-.53-.03-.78-.07.53 1.66 2.06 2.87 3.88 2.91A8.5 8.5 0 0 1 2 19.54a12.01 12.01 0 0 0 6.5 1.9c7.8 0 12.07-6.46 12.07-12.07 0-.18-.01-.36-.02-.54A8.7 8.7 0 0 0 22.46 6z"/>
+            </svg>
+            <span class="sr-only">Twitter</span>
+        </a>
     </div>
 </footer>
 

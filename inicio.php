@@ -44,6 +44,17 @@ session_start();
 		animation: glow 3s infinite alternate;
 	}
 
+	/* Estilos para partes del título */
+	.logo h1 .titulo-acento {
+		color: #ff69b4; /* color principal para "Belleza y Glamour" */
+		text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493;
+	}
+
+	.logo h1 .titulo-secundario {
+		color: #ffffff; /* color para la palabra secundaria (por ejemplo el nombre) */
+		font-weight: 700;
+	}
+
 	@keyframes glow {
 		from { text-shadow: 0 0 10px #ff1493; }
 		to { text-shadow: 0 0 20px #ff69b4, 0 0 30px #ff1493; }
@@ -61,7 +72,7 @@ session_start();
 		text-decoration: none;
 		padding: 0.8rem 1.5rem;
 		background: linear-gradient(135deg, #ff1493, #ff69b4);
-		border-radius: 25px;
+		border-radius: 10px;
 		font-weight: 600;
 		transition: all 0.3s ease;
 		border: 2px solid transparent;
@@ -111,7 +122,7 @@ session_start();
 		border: 2px solid #ff69b4;
 		background: transparent;
 		color: #ff69b4;
-		border-radius: 25px;
+		border-radius: 10px;
 		cursor: pointer;
 		font-size: 1rem;
 		font-weight: 600;
@@ -168,6 +179,46 @@ session_start();
 		box-shadow: 0 -4px 20px rgba(255, 20, 147, 0.3);
 	}
 
+	/* Redes sociales: iconos SVG oficiales */
+	.redes-sociales {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.redes-sociales a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: transparent;
+		text-decoration: none;
+		transition: transform 0.18s ease, box-shadow 0.18s ease;
+	}
+
+	.redes-sociales a svg {
+		width: 22px;
+		height: 22px;
+		display: block;
+	}
+
+	.redes-sociales a:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 6px 18px rgba(255, 105, 180, 0.12);
+	}
+
+	/* Texto accesible sólo para lectores de pantalla */
+	.sr-only {
+		position: absolute !important;
+		width: 1px; height: 1px;
+		padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+		white-space: nowrap; border: 0;
+	}
+
 	.map-wrapper iframe { width:100%; height:100%; min-height:320px; border:0; border-radius:8px; }
 
 	/* RESPONSIVE */
@@ -205,7 +256,7 @@ session_start();
 <!-- HEADER unificado con tienda.php -->
 <header>
 	<div class="logo">
-		<h1>✨ BELLEZA Y GLAMOUR ANGELITA</h1>
+		<h1>✨ <span class="titulo-acento">BELLEZA Y GLAMOUR ANGELITA</span> 
 		<p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
 	</div>
 	<nav class="menu">
@@ -225,13 +276,13 @@ session_start();
 	<div class="carousel" id="carousel">
 		<div class="carousel-track" id="track">
 			<div class="carousel-slide">
-				<img src="uploads/aceitecapilar.jpg" alt="Tratamientos capilares - Belleza y Glamour Angelita">
+				<img src="imagenes/image.jpg" alt="Tratamientos capilares - Belleza y Glamour Angelita">
 			</div>
 			<div class="carousel-slide">
-				<img src="uploads/cremahidratante.jpg" alt="Cremas y cuidado facial - Belleza y Glamour Angelita">
+				<img src="imagenes/image (1).jpg" alt="Cremas y cuidado facial - Belleza y Glamour Angelita">
 			</div>
 			<div class="carousel-slide">
-				<img src="uploads/shampoonatural.jpg" alt="Shampoo natural - Belleza y Glamour Angelita">
+				<img src="imagenes/surtido-plano-con-marco-de-maquillaje-sobre-fondo-rosa.jpg" alt="Shampoo natural - Belleza y Glamour Angelita">
 			</div>
 		</div>
 			<div class="carousel-controls">
@@ -275,9 +326,36 @@ session_start();
 	<p>Tu lugar de confianza para realizar tu belleza con productos de calidad</p>
 	<p>Contáctanos - 311-620-8892</p>
 	<div class="redes-sociales">
-		<a href="https://www.facebook.com/profile.php?id=61570566590673&mibextid=ZbWKwL" target="_blank">📘 Facebook</a>
-		<a href="https://www.instagram.com/" target="_blank">📸 Instagram</a>
-		<a href="https://twitter.com/" target="_blank">🐦 Twitter</a>
+		<a href="https://www.facebook.com/profile.php?id=61570566590673&mibextid=ZbWKwL" target="_blank" aria-label="Facebook" title="Facebook">
+			<!-- Facebook SVG (fill azul oficial) -->
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+				<path fill="#1877F2" d="M22 12C22 6.48 17.52 2 12 2S2 6.48 2 12c0 4.99 3.66 9.12 8.44 9.88v-6.99H7.9v-2.89h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 2.89h-2.3V21.88C18.34 21.12 22 16.99 22 12z"/>
+			</svg>
+			<span class="sr-only">Facebook</span>
+		</a>
+
+		<a href="https://www.instagram.com/" target="_blank" aria-label="Instagram" title="Instagram">
+			<!-- Instagram simplified SVG with gradient -->
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+				<defs>
+					<linearGradient id="igGrad" x1="0" x2="1" y1="0" y2="1">
+						<stop offset="0%" stop-color="#feda75"/>
+						<stop offset="50%" stop-color="#d62976"/>
+						<stop offset="100%" stop-color="#962fbf"/>
+					</linearGradient>
+				</defs>
+				<path fill="url(#igGrad)" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.5A4.5 4.5 0 1 0 16.5 13 4.5 4.5 0 0 0 12 8.5zm5.5-.75a1.125 1.125 0 1 1-1.125 1.125A1.125 1.125 0 0 1 17.5 7.75z"/>
+			</svg>
+			<span class="sr-only">Instagram</span>
+		</a>
+
+		<a href="https://twitter.com/" target="_blank" aria-label="Twitter" title="Twitter">
+			<!-- Twitter SVG (fill Twitter blue) -->
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+				<path fill="#1DA1F2" d="M22.46 6c-.77.35-1.6.58-2.46.69a4.26 4.26 0 0 0 1.86-2.35 8.53 8.53 0 0 1-2.7 1.03 4.24 4.24 0 0 0-7.23 3.87A12.01 12.01 0 0 1 3.15 4.6a4.24 4.24 0 0 0 1.31 5.66c-.67-.02-1.3-.21-1.85-.51v.05c0 2.02 1.44 3.7 3.36 4.08-.35.1-.72.15-1.1.15-.27 0-.53-.03-.78-.07.53 1.66 2.06 2.87 3.88 2.91A8.5 8.5 0 0 1 2 19.54a12.01 12.01 0 0 0 6.5 1.9c7.8 0 12.07-6.46 12.07-12.07 0-.18-.01-.36-.02-.54A8.7 8.7 0 0 0 22.46 6z"/>
+			</svg>
+			<span class="sr-only">Twitter</span>
+		</a>
 	</div>
 </footer>
 

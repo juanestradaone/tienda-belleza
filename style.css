@@ -64,7 +64,7 @@ header .menu a:hover {
 header .carrito-btn {
     background-color: #ff00cc;
     color: #fff !important;
-    border-radius: 8px;
+    border-radius: 3px;
     padding: 10px 16px;
     font-size: 13px;
     transition: all 0.3s ease;
@@ -129,7 +129,7 @@ header .carrito-btn:hover {
     color: #ff00cc;
     border: 2px solid #ff00cc;
     padding: 8px 18px;
-    border-radius: 25px;
+    border-radius: 3px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -296,7 +296,7 @@ header .carrito-btn:hover {
     color: #fff;
     border: none;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 3px;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
