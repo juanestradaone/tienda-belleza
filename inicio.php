@@ -297,12 +297,19 @@ session_start();
     transition: 0.3s;
 }
 
-.user-dropdown a:hover {
+  .user-dropdown a:hover {
     background: #ff0080;
-}
+  }
 
+  .icono-usuario img,
+  .foto-usuario {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 
-	</style>
+  </style>
 </head>
 <body>
 
@@ -326,18 +333,28 @@ $nombre_usuario = $_SESSION['nombre'] ?? null;
 ?>
 
 <div class="user-menu">
-    <div class="user-button" onclick="toggleMenu()">
-        <span class="icono-usuario">👤</span>
-        <div class="texto-usuario">
-            <?php if ($nombre_usuario): ?>
-                <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
-                <span>Mi cuenta</span>
-            <?php else: ?>
-                <strong>¡Hola!</strong> Inicia sesión<br>
-                <span>Mi cuenta</span>
-            <?php endif; ?>
-        </div>
+ <div class="user-button" onclick="toggleMenu()">
+
+    <div class="icono-usuario">
+        <?php if (!empty($_SESSION['foto'])): ?>
+            <img src="<?= $_SESSION['foto'] ?>" class="foto-usuario" alt="Foto usuario">
+        <?php else: ?>
+            👤
+        <?php endif; ?>
     </div>
+
+    <div class="texto-usuario">
+        <?php if ($nombre_usuario): ?>
+            <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
+            <span>Mi cuenta</span>
+        <?php else: ?>
+            <strong>¡Hola!</strong> Inicia sesión<br>
+            <span>Mi cuenta</span>
+        <?php endif; ?>
+    </div>
+
+</div>
+
 
     <div class="user-dropdown" id="dropdownMenu">
         <a href="index.php">🏠 Inicio</a>
