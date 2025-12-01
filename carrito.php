@@ -251,13 +251,15 @@ $productos = $stmt->get_result();
                 <tr data-id='{$row['id_producto']}'>
                     <td>{$row['nombre_producto']}</td>
                     <td><img src='uploads/{$row['imagen']}' alt='{$row['nombre_producto']}' class='thumb'></td>
-                    <td>\${$row['precio_producto']}</td>
+                    <td>$" . number_format($row['precio_producto'], 0, ',', '.') . "</td>
+
+
                     <td class='cantidad'>
                         <button class='menos'>−</button>
                         <span>{$row['cantidad']}</span>
                         <button class='mas'>+</button>
                     </td>
-                    <td>\$$subtotal</td>
+                    <td>$" . number_format($subtotal, 0, ',', '.') . "</td>
                     <td class='acciones'>
                         <button class='eliminar'>🗑️</button>
                     </td>
@@ -268,7 +270,7 @@ $productos = $stmt->get_result();
         </tbody>
     </table>
 
-    <div class="total">💰 Total: $<?php echo number_format($total, 2); ?></div>
+    <div class="total">💰 Total: $<?php echo number_format($total, 0, ',', '.'); ?></div>
 
     <div class="botones-final">
         <a href="tienda.php" class="btn-volver">⬅ Regresar a la tienda</a>

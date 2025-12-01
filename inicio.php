@@ -312,6 +312,28 @@ session_start();
   </style>
 </head>
 <body>
+<?php
+
+require 'conexion.php';
+
+$nombre_usuario = null;
+$foto_usuario   = null;
+
+if (!empty($_SESSION['usuario'])) {
+
+    $id = $_SESSION['usuario'];
+
+    $stmt = $conn->prepare("SELECT nombre, foto FROM usuarios WHERE id_usuario = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $resultado = $stmt->get_result()->fetch_assoc();
+
+    // Datos desde BD, correctos
+    $nombre_usuario = $resultado['nombre'];
+    $foto_usuario   = $resultado['foto'];
+}
+?>
+
 
 <!-- HEADER unificado con tienda.php -->
 <header>
@@ -335,24 +357,23 @@ $nombre_usuario = $_SESSION['nombre'] ?? null;
 <div class="user-menu">
  <div class="user-button" onclick="toggleMenu()">
 
-    <div class="icono-usuario">
-        <?php if (!empty($_SESSION['foto'])): ?>
-            <img src="<?= $_SESSION['foto'] ?>" class="foto-usuario" alt="Foto usuario">
-        <?php else: ?>
-            👤
-        <?php endif; ?>
-    </div>
+   <div class="icono-usuario">
+    <?php if (!empty($foto_usuario)): ?>
+        <img src="<?= $foto_usuario ?>" class="foto-usuario" alt="Foto usuario">
+    <?php else: ?>
+        👤
+    <?php endif; ?>
+</div>
 
-    <div class="texto-usuario">
-        <?php if ($nombre_usuario): ?>
-            <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
-            <span>Mi cuenta</span>
-        <?php else: ?>
-            <strong>¡Hola!</strong> Inicia sesión<br>
-            <span>Mi cuenta</span>
-        <?php endif; ?>
-    </div>
-
+<div class="texto-usuario">
+    <?php if (!empty($nombre_usuario)): ?>
+        <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
+        <span>Mi cuenta</span>
+    <?php else: ?>
+        <strong>¡Hola!</strong> Inicia sesión<br>
+        <span>Mi cuenta</span>
+    <?php endif; ?>
+</div>
 </div>
 
 
