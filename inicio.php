@@ -17,12 +17,13 @@ session_start();
 		box-sizing: border-box;
 	}
 
-	body {
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		background: linear-gradient(135deg, #0a0a0a 0%, #1b1b1b 50%, #2b2b2b 100%);
-		color: #f5f5f5;
-		min-height: 100vh;
-	}
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #0a0a0a 0%, #1b1b1b 50%, #2b2b2b 100%);
+			color: #f5f5f5;
+			min-height: 100vh;
+			font-size: 22px;
+		}
 
 	/* HEADER OSCURO */
 	header {
@@ -76,6 +77,12 @@ session_start();
 		font-weight: 600;
 		transition: all 0.3s ease;
 		border: 2px solid transparent;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: 3rem;
+		white-space: nowrap;
 	}
 
 	.menu a:hover {
@@ -84,6 +91,17 @@ session_start();
 		color: #ff69b4;
 		transform: translateY(-3px);
 		box-shadow: 0 0 15px #ff69b4;
+	}
+
+	.contador-carrito {
+		background: rgba(255, 255, 255, 0.4);
+		padding: 0.1rem 0.4rem;
+		border-radius: 4px;
+		font-size: 0.7rem;
+		font-weight: bold;
+		min-width: 18px;
+		text-align: center;
+		line-height: 1;
 	}
 
 	/* HERO */
@@ -429,9 +447,7 @@ function toggleMenu() {
 				de calidad y un servicio cercano para que te sientas siempre espectacular.
 			</p>
 			<ul>
-				<li>Atención personalizada</li>
-				<li>Envíos a todo el país</li>
-				<li>Productos naturales y de marcas reconocidas</li>
+
 			</ul>
 			<p>Teléfono: <strong>311 620 88-92</strong></p>
 		</div>

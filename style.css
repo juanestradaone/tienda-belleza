@@ -27,7 +27,7 @@ header {
 
 header .logo h1 {
     color: #f59e0b;
-    font-size: 20px;
+    font-size: 22px;
     letter-spacing: 2px;
     font-weight: 700;
     margin: 0;
@@ -36,7 +36,7 @@ header .logo h1 {
 
 header .logo p {
     color: #ffccf9;
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 1px;
     margin: 2px 0 0 0;
 }

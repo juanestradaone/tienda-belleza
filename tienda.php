@@ -3,10 +3,10 @@ session_start();
 include("conexion.php");
 
 // Verificar si el usuario ha iniciado sesión
-if (!isset($_SESSION['usuario'])) {
-    header("Location: index.php");
-    exit();
-}
+//if (!isset($_SESSION['usuario'])) {
+    //header("Location: index.php");
+    //exit();
+//}
 
 // Consultar productos activos
 $sql = "SELECT * FROM productos WHERE activo = 1 ORDER BY id_producto DESC";
@@ -37,6 +37,7 @@ if (!$result) {
         background: linear-gradient(135deg, #0a0a0a 0%, #1b1b1b 50%, #2b2b2b 100%);
         color: #f5f5f5;
         min-height: 100vh;
+        font-size: 18px;
     }
 
     /* HEADER OSCURO */
@@ -82,6 +83,7 @@ if (!$result) {
         gap: 1.2rem;
         margin-top: 1rem;
         flex-wrap: wrap;
+        justify-content: flex-start;
     }
 
     .menu a {
@@ -93,6 +95,10 @@ if (!$result) {
         font-weight: 600;
         transition: all 0.3s ease;
         border: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 3.2rem;
     }
 
     .menu a:hover {
@@ -101,6 +107,17 @@ if (!$result) {
         color: #ff69b4;
         transform: translateY(-3px);
         box-shadow: 0 0 15px #ff69b4;
+    }
+
+    .contador-carrito {
+        background: rgba(255, 255, 255, 0.4);
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        min-width: 18px;
+        text-align: center;
+        line-height: 1;
     }
 
     /* HERO */
