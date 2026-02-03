@@ -439,6 +439,9 @@ if (!$result) {
         <a href="inicio.php">📍 Inicio</a>
         <a href="tienda.php">🛍️ Productos</a>
         <a href="historial_pedidos.php"> Historial de pedidos</a>
+        <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
+            <a href="admin_pedidos.php">🧭 Admin pedidos</a>
+        <?php endif; ?>
         <a href="carrito.php" class="carrito-btn">
             🛒 Carrito
             <span class="contador-carrito">0</span>

@@ -99,7 +99,7 @@ function procesarPago($external_reference, $status, $conn)
     }
 
     // 2. Actualizar estado de la orden
-    $sql = "UPDATE ordenes SET estado = 'pagada' WHERE id_carrito = ?";
+    $sql = "UPDATE ordenes SET estado = 'pagado' WHERE id_carrito = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $external_reference);
     $stmt->execute();
