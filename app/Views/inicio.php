@@ -389,7 +389,6 @@ $es_admin = ($_SESSION['rol'] ?? '') === 'admin';
         <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
         <span>Mi cuenta</span>
     <?php else: ?>
-        <strong>¡Hola!</strong> Inicia sesión<br>
         <span>Mi cuenta</span>
     <?php endif; ?>
 </div>
