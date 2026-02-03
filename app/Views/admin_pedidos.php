@@ -19,6 +19,14 @@ $estado_steps = ['pendiente', 'pagado', 'enviado', 'entregado'];
 $estado_index = array_flip($estado_steps);
 
 $notificacion_whatsapp = null;
+$tiene_costo_envio = false;
+$stmt = $conn->prepare("SHOW COLUMNS FROM envios LIKE 'costo_envio'");
+if ($stmt) {
+    $stmt->execute();
+    $resultado_columnas = $stmt->get_result();
+    $tiene_costo_envio = $resultado_columnas && $resultado_columnas->num_rows > 0;
+    $stmt->close();
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['orden_id'])) {
     $orden_id = intval($_POST['orden_id']);
@@ -68,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
         }
     }
 
-    if ($accion === 'envio' && isset($_POST['costo_envio'])) {
+    if ($accion === 'envio' && isset($_POST['costo_envio']) && $tiene_costo_envio) {
         $nuevo_costo = max(0, floatval($_POST['costo_envio']));
 
         $stmt = $conn->prepare('SELECT o.total, e.costo_envio FROM ordenes o INNER JOIN envios e ON o.id_orden = e.id_orden WHERE o.id_orden = ?');
@@ -94,9 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
     }
 }
 
+$columna_costo = $tiene_costo_envio ? 'e.costo_envio' : '0 AS costo_envio';
+
 $sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion,
                u.nombre, u.apellido, u.email, u.telefono,
-               e.metodo_envio, e.costo_envio,
+               e.metodo_envio, {$columna_costo},
                d.direccion, d.ciudad, d.departamento
         FROM ordenes o
         INNER JOIN usuarios u ON o.id_usuario = u.id_usuario
@@ -348,7 +358,7 @@ $result = $conn->query($sql);
                     <button type="submit">Guardar</button>
                 </form>
 
-                <?php if (($row['metodo_envio'] ?? '') === 'Envío a domicilio'): ?>
+                <?php if (($row['metodo_envio'] ?? '') === 'Envío a domicilio' && $tiene_costo_envio): ?>
                     <form method="POST" action="">
                         <input type="hidden" name="accion" value="envio">
                         <input type="hidden" name="orden_id" value="<?= intval($row['id_orden']) ?>">
