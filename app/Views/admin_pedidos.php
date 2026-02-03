@@ -20,54 +20,88 @@ $estado_index = array_flip($estado_steps);
 
 $notificacion_whatsapp = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['orden_id'], $_POST['estado'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['orden_id'])) {
     $orden_id = intval($_POST['orden_id']);
-    $nuevo_estado = $_POST['estado'];
+    $accion = $_POST['accion'];
 
-    if (!array_key_exists($nuevo_estado, $estado_labels)) {
-        $nuevo_estado = 'pendiente';
-    }
+    if ($accion === 'estado' && isset($_POST['estado'])) {
+        $nuevo_estado = $_POST['estado'];
 
-    $stmt = $conn->prepare('UPDATE ordenes SET estado = ? WHERE id_orden = ?');
-    $stmt->bind_param('si', $nuevo_estado, $orden_id);
-    $stmt->execute();
-    $stmt->close();
+        if (!array_key_exists($nuevo_estado, $estado_labels)) {
+            $nuevo_estado = 'pendiente';
+        }
 
-    if (in_array($nuevo_estado, ['enviado', 'entregado'], true)) {
-        $stmt = $conn->prepare(
-            'SELECT o.id_orden, o.estado, u.nombre, u.apellido, u.telefono FROM ordenes o INNER JOIN usuarios u ON o.id_usuario = u.id_usuario WHERE o.id_orden = ?'
-        );
-        $stmt->bind_param('i', $orden_id);
+        $stmt = $conn->prepare('UPDATE ordenes SET estado = ? WHERE id_orden = ?');
+        $stmt->bind_param('si', $nuevo_estado, $orden_id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $orden = $result->fetch_assoc();
         $stmt->close();
 
-        if ($orden && !empty($orden['telefono'])) {
-            $telefono = preg_replace('/[^0-9]/', '', $orden['telefono']);
-            if (strlen($telefono) === 10 && str_starts_with($telefono, '3')) {
-                $telefono = '57' . $telefono;
+        if (in_array($nuevo_estado, ['enviado', 'entregado'], true)) {
+            $stmt = $conn->prepare(
+                'SELECT o.id_orden, o.estado, u.nombre, u.apellido, u.telefono FROM ordenes o INNER JOIN usuarios u ON o.id_usuario = u.id_usuario WHERE o.id_orden = ?'
+            );
+            $stmt->bind_param('i', $orden_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $orden = $result->fetch_assoc();
+            $stmt->close();
+
+            if ($orden && !empty($orden['telefono'])) {
+                $telefono = preg_replace('/[^0-9]/', '', $orden['telefono']);
+                if (strlen($telefono) === 10 && str_starts_with($telefono, '3')) {
+                    $telefono = '57' . $telefono;
+                }
+
+                $nombre_cliente = trim($orden['nombre'] . ' ' . $orden['apellido']);
+                $estado_texto = $estado_labels[$nuevo_estado] ?? $nuevo_estado;
+                $mensaje = "Hola {$nombre_cliente}, tu pedido #{$orden['id_orden']} ahora está {$estado_texto}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
+                $whatsapp_link = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
+
+                $notificacion_whatsapp = [
+                    'orden_id' => $orden['id_orden'],
+                    'estado' => $estado_texto,
+                    'telefono' => $telefono,
+                    'link' => $whatsapp_link,
+                    'cliente' => $nombre_cliente
+                ];
             }
+        }
+    }
 
-            $nombre_cliente = trim($orden['nombre'] . ' ' . $orden['apellido']);
-            $estado_texto = $estado_labels[$nuevo_estado] ?? $nuevo_estado;
-            $mensaje = "Hola {$nombre_cliente}, tu pedido #{$orden['id_orden']} ahora está {$estado_texto}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
-            $whatsapp_link = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
+    if ($accion === 'envio' && isset($_POST['costo_envio'])) {
+        $nuevo_costo = max(0, floatval($_POST['costo_envio']));
 
-            $notificacion_whatsapp = [
-                'orden_id' => $orden['id_orden'],
-                'estado' => $estado_texto,
-                'telefono' => $telefono,
-                'link' => $whatsapp_link,
-                'cliente' => $nombre_cliente
-            ];
+        $stmt = $conn->prepare('SELECT o.total, e.costo_envio FROM ordenes o INNER JOIN envios e ON o.id_orden = e.id_orden WHERE o.id_orden = ?');
+        $stmt->bind_param('i', $orden_id);
+        $stmt->execute();
+        $stmt->bind_result($total_actual, $costo_actual);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($total_actual !== null) {
+            $total_actualizado = ($total_actual - floatval($costo_actual)) + $nuevo_costo;
+
+            $stmt = $conn->prepare('UPDATE envios SET costo_envio = ? WHERE id_orden = ?');
+            $stmt->bind_param('di', $nuevo_costo, $orden_id);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $conn->prepare('UPDATE ordenes SET total = ? WHERE id_orden = ?');
+            $stmt->bind_param('di', $total_actualizado, $orden_id);
+            $stmt->execute();
+            $stmt->close();
         }
     }
 }
 
-$sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, u.nombre, u.apellido, u.email, u.telefono
+$sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion,
+               u.nombre, u.apellido, u.email, u.telefono,
+               e.metodo_envio, e.costo_envio,
+               d.direccion, d.ciudad, d.departamento
         FROM ordenes o
         INNER JOIN usuarios u ON o.id_usuario = u.id_usuario
+        LEFT JOIN envios e ON o.id_orden = e.id_orden
+        LEFT JOIN direcciones_envio d ON o.id_direccion = d.id_direccion
         ORDER BY o.fecha_compra DESC";
 $result = $conn->query($sql);
 ?>
@@ -280,6 +314,10 @@ $result = $conn->query($sql);
                         <h3>Pedido #<?= intval($row['id_orden']) ?> - <?= htmlspecialchars($row['nombre'] . ' ' . $row['apellido']) ?></h3>
                         <div class="meta"><?= htmlspecialchars($row['email']) ?> · <?= htmlspecialchars($row['telefono'] ?? 'Sin teléfono') ?></div>
                         <div class="meta">Fecha: <?= htmlspecialchars($row['fecha_compra']) ?> · Total: $<?= number_format((float) $row['total'], 2) ?></div>
+                        <div class="meta">Entrega: <?= htmlspecialchars($row['metodo_envio'] ?? 'Sin definir') ?> · Envío: $<?= number_format((float) ($row['costo_envio'] ?? 0), 2) ?></div>
+                        <?php if (!empty($row['direccion'])): ?>
+                            <div class="meta">Dirección: <?= htmlspecialchars($row['direccion'] . ', ' . $row['ciudad'] . ' (' . $row['departamento'] . ')') ?></div>
+                        <?php endif; ?>
                     </div>
                     <span class="status-pill"><?= htmlspecialchars($etiqueta) ?></span>
                 </div>
@@ -297,6 +335,7 @@ $result = $conn->query($sql);
                 <?php endif; ?>
 
                 <form method="POST" action="">
+                    <input type="hidden" name="accion" value="estado">
                     <input type="hidden" name="orden_id" value="<?= intval($row['id_orden']) ?>">
                     <label for="estado-<?= intval($row['id_orden']) ?>" class="meta">Actualizar estado:</label>
                     <select name="estado" id="estado-<?= intval($row['id_orden']) ?>">
@@ -308,6 +347,16 @@ $result = $conn->query($sql);
                     </select>
                     <button type="submit">Guardar</button>
                 </form>
+
+                <?php if (($row['metodo_envio'] ?? '') === 'Envío a domicilio'): ?>
+                    <form method="POST" action="">
+                        <input type="hidden" name="accion" value="envio">
+                        <input type="hidden" name="orden_id" value="<?= intval($row['id_orden']) ?>">
+                        <label for="costo-envio-<?= intval($row['id_orden']) ?>" class="meta">Costo de envío:</label>
+                        <input type="number" step="0.01" min="0" name="costo_envio" id="costo-envio-<?= intval($row['id_orden']) ?>" value="<?= htmlspecialchars((float) ($row['costo_envio'] ?? 0)) ?>">
+                        <button type="submit">Actualizar envío</button>
+                    </form>
+                <?php endif; ?>
 
                 <?php if ($link_whatsapp): ?>
                     <a class="whatsapp-link" href="<?= htmlspecialchars($link_whatsapp) ?>" target="_blank" rel="noopener">📲 Enviar WhatsApp al cliente</a>
