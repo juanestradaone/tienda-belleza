@@ -388,7 +388,6 @@ $nombre_usuario = $_SESSION['nombre'] ?? null;
         <span>Mi cuenta</span>
     <?php else: ?>
         <strong>¡Hola!</strong> Inicia sesión<br>
-        <span>Mi cuenta</span>
     <?php endif; ?>
 </div>
 </div>
