@@ -1,0 +1,69 @@
+<?php
+require __DIR__ . '/../../Config/conexion.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre = $_POST['nombre'];
+    $precio = $_POST['precio'];
+    $cantidad = $_POST['cantidad'];
+    // Manejar categorías como checklist (categoria[]) y campo opcional categoria_otro
+    $categoria = '';
+    if (isset($_POST['categoria'])) {
+        if (is_array($_POST['categoria'])) {
+            // unir las categorías seleccionadas con comas
+            $cats = array_map('trim', $_POST['categoria']);
+            $categoria = implode(',', $cats);
+        } else {
+            $categoria = trim($_POST['categoria']);
+        }
+    }
+    if (!empty($_POST['categoria_otro'])) {
+        $otro = trim($_POST['categoria_otro']);
+        if ($otro !== '') {
+            if ($categoria !== '') {
+                $categoria .= ',' . $otro;
+            } else {
+                $categoria = $otro;
+            }
+        }
+    }
+
+    $descripcion = $_POST['descripcion'];
+
+    // Manejo de la imagen
+    $directorio = __DIR__ . '/../../uploads/';
+    $nombre_imagen = basename($_FILES["imagen"]["name"]);
+    $ruta_final = $directorio . $nombre_imagen;
+
+    // Verificar si el archivo es una imagen
+    $tipo = strtolower(pathinfo($ruta_final, PATHINFO_EXTENSION));
+    $permitidos = ["jpg", "jpeg", "png", "gif"];
+
+    if (!in_array($tipo, $permitidos)) {
+        echo "<script>alert('❌ Solo se permiten imágenes (JPG, JPEG, PNG, GIF)'); window.history.back();</script>";
+        exit;
+    }
+
+    // Mover la imagen a la carpeta uploads
+    if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $ruta_final)) {
+
+        // Guardar en la base de datos
+        $sql = "INSERT INTO productos (nombre_producto, precio_producto, cantidad_disponible, categoria_producto, descripcion, imagen)
+                VALUES (?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sdisss", $nombre, $precio, $cantidad, $categoria, $descripcion, $nombre_imagen);
+
+        if ($stmt->execute()) {
+            echo "<script>
+                    alert('✅ Producto agregado correctamente');
+                    window.location.href='agregar_producto.php';
+                  </script>";
+        } else {
+            echo "❌ Error al guardar el producto: " . $conn->error;
+        }
+
+    } else {
+        echo "<script>alert('❌ Error al subir la imagen'); window.history.back();</script>";
+    }
+}
+?>
