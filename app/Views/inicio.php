@@ -370,6 +370,7 @@ if (!empty($_SESSION['usuario'])) {
 	</nav>
 <?php
 $nombre_usuario = $_SESSION['nombre'] ?? null;
+$es_admin = ($_SESSION['rol'] ?? '') === 'admin';
 ?>
 
 <div class="user-menu">
@@ -397,6 +398,9 @@ $nombre_usuario = $_SESSION['nombre'] ?? null;
         <a href="index.php">🏠 Inicio</a>
         <a href="perfil.php">👤 Mi Perfil</a>
         <a href="ayuda.php">❓ Ayuda</a>
+        <?php if ($es_admin): ?>
+            <a href="admin_pedidos.php">🧭 Admin pedidos</a>
+        <?php endif; ?>
 
         <?php if ($nombre_usuario): ?>
             <a href="logout.php">🚪 Cerrar sesión</a>

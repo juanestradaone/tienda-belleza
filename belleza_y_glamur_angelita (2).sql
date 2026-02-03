@@ -170,7 +170,8 @@ CREATE TABLE `envios` (
   `id_orden` int(11) DEFAULT NULL,
   `metodo_envio` varchar(150) NOT NULL,
   `estado_envio` enum('pendiente','en camino','entregado') DEFAULT 'pendiente',
-  `fecha_envio` date DEFAULT NULL
+  `fecha_envio` date DEFAULT NULL,
+  `costo_envio` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
