@@ -385,7 +385,6 @@ $nombre_usuario = $_SESSION['nombre'] ?? null;
 
 <div class="texto-usuario">
     <?php if (!empty($nombre_usuario)): ?>
-        <strong>¡Hola!</strong> <?= $nombre_usuario ?><br>
         <span>Mi cuenta</span>
     <?php else: ?>
         <strong>¡Hola!</strong> Inicia sesión<br>
