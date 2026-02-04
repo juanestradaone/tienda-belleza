@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-11-2025 a las 16:00:46
+-- Tiempo de generación: 04-02-2026 a las 13:43:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -88,7 +88,9 @@ CREATE TABLE `detalle_carrito` (
 --
 
 INSERT INTO `detalle_carrito` (`id_detalle`, `id_carrito`, `id_producto`, `cantidad`, `precio_unitario`) VALUES
-(50, 15, 38, 1, 12000.00);
+(50, 15, 38, 1, 12000.00),
+(51, 14, 39, 1, 18000.00),
+(52, 14, 38, 1, 12000.00);
 
 -- --------------------------------------------------------
 
@@ -134,6 +136,13 @@ CREATE TABLE `direcciones_envio` (
   `telefono` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `direcciones_envio`
+--
+
+INSERT INTO `direcciones_envio` (`id_direccion`, `id_usuario`, `nombre_destinatario`, `direccion`, `ciudad`, `departamento`, `telefono`) VALUES
+(1, 3, 'juan estrada', 'mz c casa 4', 'ibague', 'tolima', '300254789');
+
 -- --------------------------------------------------------
 
 --
@@ -173,6 +182,13 @@ CREATE TABLE `envios` (
   `fecha_envio` date DEFAULT NULL,
   `costo_envio` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `envios`
+--
+
+INSERT INTO `envios` (`id_envio`, `id_orden`, `metodo_envio`, `estado_envio`, `fecha_envio`, `costo_envio`) VALUES
+(1, 27, 'Envío a domicilio', 'pendiente', NULL, 10000.00);
 
 -- --------------------------------------------------------
 
@@ -216,7 +232,8 @@ INSERT INTO `ordenes` (`id_orden`, `id_usuario`, `id_direccion`, `fecha_compra`,
 (23, 3, NULL, '2025-11-19 14:08:32', 101000.00, 'pendiente', NULL, NULL, '2992707168-046b6692-b92e-45a4-9f19-a6ad4ea02c6e', 14),
 (24, 3, NULL, '2025-11-19 14:11:27', 101000.00, 'pendiente', NULL, NULL, '2992707168-49df40e0-c6d3-4266-9352-b3545f37d240', 14),
 (25, 3, NULL, '2025-11-24 11:49:43', 101000.00, 'pendiente', NULL, NULL, '2992707168-e45e5e66-9924-4abe-a582-11530f544a21', 14),
-(26, 3, NULL, '2025-11-24 12:00:50', 101000.00, 'pendiente', NULL, NULL, '2992707168-b2185860-c77e-4e25-b84c-0f5000865ed6', 14);
+(26, 3, NULL, '2025-11-24 12:00:50', 101000.00, 'pendiente', NULL, NULL, '2992707168-b2185860-c77e-4e25-b84c-0f5000865ed6', 14),
+(27, 3, 1, '2026-02-03 16:30:58', 40000.00, 'pendiente', NULL, NULL, '2992707168-02349322-626d-4b6c-af51-364af5e2cea5', 14);
 
 -- --------------------------------------------------------
 
@@ -332,10 +349,10 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `direccion`, `email`, `telefono`, `contrasena`, `tipo_pago`, `rol`, `fecha_registro`, `google_id`, `foto`) VALUES
-(3, 'juan', 'estrada', 'mz c casa 4', 'junestradao@gmail.com', '300254789', '$2y$10$i9UfchU67aAGMowgfps2Vu.aPBd9YFgvD6ixNlp4FSENUZm0JHPu.', NULL, 'cliente', '2025-10-13 17:18:29', NULL, NULL),
+(3, 'juan', 'estrada', 'mz c casa 4', 'juanestradaone@gmail.com', '300254789', '$2y$10$i9UfchU67aAGMowgfps2Vu.aPBd9YFgvD6ixNlp4FSENUZm0JHPu.', NULL, 'admin', '2025-10-13 17:18:29', NULL, NULL),
 (4, 'Juan Estrada', '', NULL, 'juanestebanestr@gmail.com', NULL, '', NULL, 'cliente', '2025-11-24 15:47:39', '108231651079440101724', 'https://lh3.googleusercontent.com/a/ACg8ocImqUoxlUhNEnF3iD_oWbzd0j4L-N6VNpr85_5IioJm5bn8=s96-c'),
-(5, 'laura rodriguez', '', NULL, 'lizethrubiorodriguez11@gmail.com', NULL, '', NULL, 'cliente', '2025-11-25 13:28:23', '102073969644368043867', 'https://lh3.googleusercontent.com/a/ACg8ocIZ6SflJWVOoqisBItHfrkUB-yzaG-dFExxUJy7nU1reTTdSA=s96-c'),
-(6, 'Laura Lizeth Rubio Rodriguez', '', NULL, 'laurarizethrubio07@gmail.com', NULL, '', NULL, 'cliente', '2025-11-26 11:58:08', '104055413215066594831', 'https://lh3.googleusercontent.com/a/ACg8ocJgbGAwnw0hZYGWquZepJhefPsNcQgkyDjTSK2e2JF5RFaHziou=s96-c');
+(7, 'Laura', 'Rubio', '', 'lizethrubiorodriguez11@gmail.com', '3148636556', '$2y$10$GXIGejX3ILJ6WJ7c79akI.4JDIlCLHONeAmhx2dafN4CjErBxH36e', NULL, 'admin', '2026-02-04 12:40:16', NULL, NULL),
+(8, 'David Santiago Sandoval tejada', '', NULL, 'sandovaltejadadavidsantiago@gmail.com', NULL, '', NULL, 'admin', '2026-02-04 12:42:04', '100720987940139994888', 'https://lh3.googleusercontent.com/a/ACg8ocIXUccHylB1EbiVrWiDGTV-U1Lu9vgxs-eFIsV7UtAMSdMw_neH=s96-c');
 
 -- --------------------------------------------------------
 
@@ -478,7 +495,7 @@ ALTER TABLE `carrito_detalle_historial`
 -- AUTO_INCREMENT de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_orden`
@@ -496,7 +513,7 @@ ALTER TABLE `detalle_ventas`
 -- AUTO_INCREMENT de la tabla `direcciones_envio`
 --
 ALTER TABLE `direcciones_envio`
-  MODIFY `id_direccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_direccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `empresa`
@@ -508,13 +525,13 @@ ALTER TABLE `empresa`
 -- AUTO_INCREMENT de la tabla `envios`
 --
 ALTER TABLE `envios`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `ordenes`
 --
 ALTER TABLE `ordenes`
-  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
@@ -538,7 +555,7 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
