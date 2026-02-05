@@ -350,8 +350,22 @@ if (!empty($_SESSION['usuario'])) {
     $resultado = $stmt->get_result()->fetch_assoc();
 
     // Datos desde BD, correctos
-    $nombre_usuario = $resultado['nombre'];
-    $foto_usuario   = $resultado['foto'];
+    $nombre_usuario = $resultado['nombre'] ?? null;
+    $foto_usuario   = $resultado['foto'] ?? null;
+}
+
+if (empty($nombre_usuario) && !empty($_SESSION['nombre'])) {
+    $nombre_usuario = $_SESSION['nombre'];
+}
+
+$foto_usuario_url = null;
+if (!empty($foto_usuario)) {
+    $foto_limpia = ltrim((string) $foto_usuario, '/');
+    if (str_starts_with($foto_limpia, 'imagenes/usuarios/')) {
+        $foto_usuario_url = $foto_limpia;
+    } else {
+        $foto_usuario_url = 'imagenes/usuarios/' . basename($foto_limpia);
+    }
 }
 ?>
 
@@ -371,17 +385,14 @@ if (!empty($_SESSION['usuario'])) {
 		</a>
 
 	</nav>
-<?php
-$nombre_usuario = $_SESSION['nombre'] ?? null;
-$es_admin = ($_SESSION['rol'] ?? '') === 'admin';
-?>
+<?php $es_admin = ($_SESSION['rol'] ?? '') === 'admin'; ?>
 
 <div class="user-menu">
  <div class="user-button" onclick="toggleMenu()">
 
    <div class="icono-usuario">
-    <?php if (!empty($foto_usuario)): ?>
-        <img src="<?= $foto_usuario ?>" class="foto-usuario" alt="Foto usuario">
+    <?php if (!empty($foto_usuario_url)): ?>
+        <img src="<?= htmlspecialchars($foto_usuario_url) ?>" class="foto-usuario" alt="Foto usuario">
     <?php else: ?>
         👤
     <?php endif; ?>
