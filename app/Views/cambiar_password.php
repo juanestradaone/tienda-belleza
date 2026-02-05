@@ -21,19 +21,32 @@ if ($_POST) {
     $stmt->bind_result($passHash);
     $stmt->fetch();
 
+    // 🔴 CLAVE PARA EVITAR EL ERROR
+    $stmt->close();
+
     // Verificar contraseña
     if (!password_verify($passActual, $passHash)) {
         $error = "La contraseña actual no es correcta.";
     } else {
+
+    // ❌ Evitar reutilizar la misma contraseña
+    if (password_verify($passNueva, $passHash)) {
+        $error = "La nueva contraseña no puede ser igual a la anterior.";
+    } else {
+
         $nuevoHash = password_hash($passNueva, PASSWORD_DEFAULT);
 
         $update = $conn->prepare("UPDATE usuarios SET contrasena=? WHERE id_usuario=?");
         $update->bind_param("si", $nuevoHash, $id);
         $update->execute();
+        $update->close();
+
         $success = "¡Contraseña actualizada correctamente!";
     }
 }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -69,6 +82,30 @@ button {
     cursor:pointer;
 }
 button:hover { background:#ff4da6; }
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    padding-right: 4px;
+}
+
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+.toggle-eye:hover {
+    opacity: 1;
+}
+
+
+
 </style>
 </head>
 
@@ -82,14 +119,44 @@ button:hover { background:#ff4da6; }
 
     <form method="POST">
         <label>Contraseña actual</label>
-        <input type="password" name="password_actual" required>
+     <div class="password-box">
+     <input type="password" id="passActual" name="password_actual" required>
+     <span class="toggle-eye" onclick="togglePass('passActual', this)">👁️</span>
+</div>
 
-        <label>Nueva contraseña</label>
-        <input type="password" name="password_nueva" required>
+    <label>Nueva contraseña</label>
+    <div class="password-box">
+    <input type="password" id="passNueva" name="password_nueva" required>
+    <span class="toggle-eye" onclick="togglePass('passNueva', this)">👁️</span>
+</div>
+
+
 
         <button>Actualizar Contraseña</button>
     </form>
 </div>
+<script>
+    function togglePassword() {
+    const inputs = document.querySelectorAll('input[type="password"]');
+    inputs.forEach(input => {
+        input.type = input.type === "password" ? "text" : "password";
+    });
+}
+</script>
+<script>
+    function togglePass(id, icon) {
+    const input = document.getElementById(id);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈";
+    } else {
+        input.type = "password";
+        icon.textContent = "👁️";
+    }
+}
+</script>
+
 
 </body>
 </html>
