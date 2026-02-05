@@ -20,12 +20,33 @@ $estado_index = array_flip($estado_steps);
 
 $notificacion_whatsapp = null;
 $tiene_costo_envio = false;
+$tiene_archivado = false;
 $stmt = $conn->prepare("SHOW COLUMNS FROM envios LIKE 'costo_envio'");
 if ($stmt) {
     $stmt->execute();
     $resultado_columnas = $stmt->get_result();
     $tiene_costo_envio = $resultado_columnas && $resultado_columnas->num_rows > 0;
     $stmt->close();
+}
+
+$stmt = $conn->prepare("SHOW COLUMNS FROM ordenes LIKE 'archivado'");
+if ($stmt) {
+    $stmt->execute();
+    $resultado_columnas = $stmt->get_result();
+    $tiene_archivado = $resultado_columnas && $resultado_columnas->num_rows > 0;
+    $stmt->close();
+}
+
+if (!$tiene_archivado) {
+    $conn->query("ALTER TABLE ordenes ADD COLUMN archivado TINYINT(1) NOT NULL DEFAULT 0");
+
+    $stmt = $conn->prepare("SHOW COLUMNS FROM ordenes LIKE 'archivado'");
+    if ($stmt) {
+        $stmt->execute();
+        $resultado_columnas = $stmt->get_result();
+        $tiene_archivado = $resultado_columnas && $resultado_columnas->num_rows > 0;
+        $stmt->close();
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['orden_id'])) {
@@ -44,7 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
         $stmt->execute();
         $stmt->close();
 
-        if (in_array($nuevo_estado, ['enviado', 'entregado'], true)) {
+        if ($nuevo_estado === 'entregado' && $tiene_archivado) {
+            $stmt = $conn->prepare('UPDATE ordenes SET archivado = 0 WHERE id_orden = ?');
+            $stmt->bind_param('i', $orden_id);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        if (in_array($nuevo_estado, ['enviado', 'entregado', 'cancelado'], true)) {
             $stmt = $conn->prepare(
                 'SELECT o.id_orden, o.estado, u.nombre, u.apellido, u.telefono FROM ordenes o INNER JOIN usuarios u ON o.id_usuario = u.id_usuario WHERE o.id_orden = ?'
             );
@@ -62,7 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
 
                 $nombre_cliente = trim($orden['nombre'] . ' ' . $orden['apellido']);
                 $estado_texto = $estado_labels[$nuevo_estado] ?? $nuevo_estado;
-                $mensaje = "Hola {$nombre_cliente}, tu pedido #{$orden['id_orden']} ahora está {$estado_texto}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
+                if ($nuevo_estado === 'cancelado') {
+                    $mensaje = "Hola {$nombre_cliente}, te informamos que el pedido #{$orden['id_orden']} fue cancelado. Si tienes dudas, escríbenos y con gusto te ayudamos.";
+                } else {
+                    $mensaje = "Hola {$nombre_cliente}, tu pedido #{$orden['id_orden']} ahora está {$estado_texto}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
+                }
                 $whatsapp_link = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
 
                 $notificacion_whatsapp = [
@@ -74,6 +106,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
                 ];
             }
         }
+    }
+
+    if ($accion === 'archivar' && $tiene_archivado) {
+        $archivar = isset($_POST['archivar']) && $_POST['archivar'] === '1' ? 1 : 0;
+        $stmt = $conn->prepare('UPDATE ordenes SET archivado = ? WHERE id_orden = ?');
+        $stmt->bind_param('ii', $archivar, $orden_id);
+        $stmt->execute();
+        $stmt->close();
     }
 
     if ($accion === 'envio' && isset($_POST['costo_envio']) && $tiene_costo_envio) {
@@ -102,9 +142,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'], $_POST['ord
     }
 }
 
+$estado_filtro = $_GET['estado'] ?? 'todos';
+if ($estado_filtro !== 'todos' && !array_key_exists($estado_filtro, $estado_labels)) {
+    $estado_filtro = 'todos';
+}
+
+$vista = $_GET['vista'] ?? 'activos';
+if (!in_array($vista, ['activos', 'archivados', 'todos'], true)) {
+    $vista = 'activos';
+}
+
+$busqueda = trim($_GET['q'] ?? '');
+
 $columna_costo = $tiene_costo_envio ? 'e.costo_envio' : '0 AS costo_envio';
 
+$condiciones = [];
+$parametros = [];
+$tipos = '';
+
+if ($tiene_archivado) {
+    if ($vista === 'activos') {
+        $condiciones[] = 'o.archivado = 0';
+    } elseif ($vista === 'archivados') {
+        $condiciones[] = 'o.archivado = 1';
+    }
+} elseif ($vista === 'archivados') {
+    $condiciones[] = "o.estado = 'entregado'";
+}
+
+if ($estado_filtro !== 'todos') {
+    $condiciones[] = 'o.estado = ?';
+    $tipos .= 's';
+    $parametros[] = $estado_filtro;
+}
+
+if ($busqueda !== '') {
+    $termino = '%' . $busqueda . '%';
+    $condiciones[] = '(CAST(o.id_orden AS CHAR) LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.email LIKE ? OR u.telefono LIKE ?)';
+    $tipos .= 'sssss';
+    $parametros = array_merge($parametros, array_fill(0, 5, $termino));
+}
+
+$where_sql = $condiciones ? ' WHERE ' . implode(' AND ', $condiciones) : '';
+
 $sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion,
+               " . ($tiene_archivado ? 'o.archivado,' : '0 AS archivado,') . "
                u.nombre, u.apellido, u.email, u.telefono,
                e.metodo_envio, {$columna_costo},
                d.direccion, d.ciudad, d.departamento
@@ -112,8 +194,17 @@ $sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion,
         INNER JOIN usuarios u ON o.id_usuario = u.id_usuario
         LEFT JOIN envios e ON o.id_orden = e.id_orden
         LEFT JOIN direcciones_envio d ON o.id_direccion = d.id_direccion
+        {$where_sql}
         ORDER BY o.fecha_compra DESC";
-$result = $conn->query($sql);
+
+if (!empty($parametros)) {
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($tipos, ...$parametros);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query($sql);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -150,6 +241,57 @@ $result = $conn->query($sql);
             margin: 0 auto;
             display: grid;
             gap: 18px;
+        }
+
+        .filters {
+            max-width: 1200px;
+            margin: 0 auto 18px;
+            background: rgba(17, 17, 17, 0.92);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            border-radius: 16px;
+            padding: 14px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .filters form {
+            margin: 0;
+            display: grid;
+            grid-template-columns: minmax(220px, 1.8fr) minmax(160px, 1fr) minmax(180px, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+            background: #1f1f1f;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            border: 1px solid rgba(255, 105, 180, 0.25);
+            background: rgba(255, 105, 180, 0.1);
+        }
+
+        .chip.active {
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            border-color: transparent;
         }
 
         .card {
@@ -284,11 +426,21 @@ $result = $conn->query($sql);
             background: rgba(17, 17, 17, 0.7);
             border-radius: 12px;
         }
+
+        .archive-button {
+            background: linear-gradient(135deg, #4b5563, #1f2937);
+        }
+
+        @media (max-width: 980px) {
+            .filters form {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 <h1>📦 Seguimiento de pedidos</h1>
-<p class="subtitulo">Administra el estado de los pedidos y envía notificaciones por WhatsApp cuando estén en camino o entregados.</p>
+<p class="subtitulo">Administra el estado de los pedidos, filtra por cliente o estado y organiza los entregados archivándolos.</p>
 
 <?php if ($notificacion_whatsapp): ?>
     <div class="notice">
@@ -296,6 +448,33 @@ $result = $conn->query($sql);
         <a class="whatsapp-link" href="<?= htmlspecialchars($notificacion_whatsapp['link']) ?>" target="_blank" rel="noopener">📲 Enviar WhatsApp</a>
     </div>
 <?php endif; ?>
+
+<div class="filters">
+    <form method="GET" action="">
+        <input type="text" name="q" placeholder="Buscar por pedido, cliente, correo o teléfono" value="<?= htmlspecialchars($busqueda) ?>">
+        <select name="estado">
+            <option value="todos" <?= $estado_filtro === 'todos' ? 'selected' : '' ?>>Todos los estados</option>
+            <?php foreach ($estado_labels as $valor => $texto): ?>
+                <option value="<?= htmlspecialchars($valor) ?>" <?= $estado_filtro === $valor ? 'selected' : '' ?>><?= htmlspecialchars($texto) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <select name="vista">
+            <option value="activos" <?= $vista === 'activos' ? 'selected' : '' ?>>Pedidos visibles</option>
+            <option value="archivados" <?= $vista === 'archivados' ? 'selected' : '' ?>>Pedidos archivados</option>
+            <option value="todos" <?= $vista === 'todos' ? 'selected' : '' ?>>Todos</option>
+        </select>
+        <button type="submit">Aplicar filtros</button>
+    </form>
+    <div class="chip-group">
+        <?php
+            $base_q = $busqueda !== '' ? '&q=' . urlencode($busqueda) : '';
+            $base_estado = '&estado=' . urlencode($estado_filtro);
+        ?>
+        <a class="chip <?= $vista === 'activos' ? 'active' : '' ?>" href="?vista=activos<?= $base_estado . $base_q ?>">Activos</a>
+        <a class="chip <?= $vista === 'archivados' ? 'active' : '' ?>" href="?vista=archivados<?= $base_estado . $base_q ?>">Archivados</a>
+        <a class="chip <?= $vista === 'todos' ? 'active' : '' ?>" href="?vista=todos<?= $base_estado . $base_q ?>">Todos</a>
+    </div>
+</div>
 
 <div class="panel">
     <?php if ($result && $result->num_rows > 0): ?>
@@ -312,9 +491,13 @@ $result = $conn->query($sql);
                     $telefono = '57' . $telefono;
                 }
                 $link_whatsapp = null;
-                if (!empty($telefono) && in_array($estado_actual, ['enviado', 'entregado'], true)) {
+                if (!empty($telefono) && in_array($estado_actual, ['enviado', 'entregado', 'cancelado'], true)) {
                     $nombre_cliente = trim($row['nombre'] . ' ' . $row['apellido']);
-                    $mensaje = "Hola {$nombre_cliente}, tu pedido #{$row['id_orden']} ahora está {$etiqueta}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
+                    if ($estado_actual === 'cancelado') {
+                        $mensaje = "Hola {$nombre_cliente}, te informamos que el pedido #{$row['id_orden']} fue cancelado. Si tienes dudas, escríbenos y con gusto te ayudamos.";
+                    } else {
+                        $mensaje = "Hola {$nombre_cliente}, tu pedido #{$row['id_orden']} ahora está {$etiqueta}. ¡Gracias por comprar con Belleza y Glamour Angelita!";
+                    }
                     $link_whatsapp = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
                 }
             ?>
@@ -370,6 +553,17 @@ $result = $conn->query($sql);
 
                 <?php if ($link_whatsapp): ?>
                     <a class="whatsapp-link" href="<?= htmlspecialchars($link_whatsapp) ?>" target="_blank" rel="noopener">📲 Enviar WhatsApp al cliente</a>
+                <?php endif; ?>
+
+                <?php if ($estado_actual === 'entregado' || (int) ($row['archivado'] ?? 0) === 1): ?>
+                    <form method="POST" action="">
+                        <input type="hidden" name="accion" value="archivar">
+                        <input type="hidden" name="orden_id" value="<?= intval($row['id_orden']) ?>">
+                        <input type="hidden" name="archivar" value="<?= (int) ($row['archivado'] ?? 0) === 1 ? 0 : 1 ?>">
+                        <button type="submit" class="archive-button">
+                            <?= (int) ($row['archivado'] ?? 0) === 1 ? 'Desarchivar pedido' : 'Archivar pedido entregado' ?>
+                        </button>
+                    </form>
                 <?php endif; ?>
             </article>
         <?php endwhile; ?>
