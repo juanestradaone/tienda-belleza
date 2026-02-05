@@ -55,6 +55,15 @@ header .menu a {
     transition: color 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    /* Added to match menu buttons used in inicio.php */
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
 }
 
 header .menu a:hover {
@@ -63,16 +72,19 @@ header .menu a:hover {
 
 header .carrito-btn {
     background-color: #ff00cc;
-    color: #fff !important;
-    border-radius: 3px;
-    padding: 10px 16px;
-    font-size: 13px;
+    color: #fff !important;      
+    background: linear-gradient(135deg, #ff1493, #ff69b4);
+    border-radius: 10px;
+    padding: 0.8rem 1.5rem; 
+    min-height: 3rem; 
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-weight: 700;
     position: relative;
+    border: 2px solid transparent;
+    text-transform: uppercase;
 }
 
 header .carrito-btn:hover {

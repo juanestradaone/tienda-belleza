@@ -85,6 +85,7 @@ session_start();
 		white-space: nowrap;
 	}
 
+
 	.menu a:hover {
 		background: transparent;
 		border-color: #ff69b4;
@@ -282,7 +283,9 @@ session_start();
     gap: 8px;
     border: 2px solid #ff0080;
     box-shadow: 0 0 12px rgba(255,0,130,0.5);
-    transition: 0.3s;
+	transition: 0.3s;
+	position: relative;
+	top: 6px;
 }
 
 .user-button:hover {
@@ -329,7 +332,7 @@ session_start();
 
   </style>
 </head>
-<body>
+<body class="inicio">
 <?php
 
 require __DIR__ . '/../Config/conexion.php';
