@@ -148,7 +148,7 @@ if ($estado_filtro !== 'todos' && !array_key_exists($estado_filtro, $estado_labe
 }
 
 $vista = $_GET['vista'] ?? 'activos';
-if (!in_array($vista, ['activos', 'archivados', 'todos'], true)) {
+if (!in_array($vista, ['activos', 'cancelados', 'archivados', 'todos'], true)) {
     $vista = 'activos';
 }
 
@@ -163,11 +163,19 @@ $tipos = '';
 if ($tiene_archivado) {
     if ($vista === 'activos') {
         $condiciones[] = 'o.archivado = 0';
+        $condiciones[] = "o.estado <> 'cancelado'";
+    } elseif ($vista === 'cancelados') {
+        $condiciones[] = 'o.archivado = 0';
+        $condiciones[] = "o.estado = 'cancelado'";
     } elseif ($vista === 'archivados') {
         $condiciones[] = 'o.archivado = 1';
     }
 } elseif ($vista === 'archivados') {
     $condiciones[] = "o.estado = 'entregado'";
+} elseif ($vista === 'cancelados') {
+    $condiciones[] = "o.estado = 'cancelado'";
+} elseif ($vista === 'activos') {
+    $condiciones[] = "o.estado <> 'cancelado'";
 }
 
 if ($estado_filtro !== 'todos') {
@@ -440,7 +448,7 @@ if (!empty($parametros)) {
 </head>
 <body>
 <h1>📦 Seguimiento de pedidos</h1>
-<p class="subtitulo">Administra el estado de los pedidos, filtra por cliente o estado y organiza los entregados archivándolos.</p>
+<p class="subtitulo">Administra el estado de los pedidos, filtra por cliente o estado y organiza los pedidos cancelados y entregados en sus apartados correspondientes.</p>
 
 <?php if ($notificacion_whatsapp): ?>
     <div class="notice">
@@ -460,6 +468,7 @@ if (!empty($parametros)) {
         </select>
         <select name="vista">
             <option value="activos" <?= $vista === 'activos' ? 'selected' : '' ?>>Pedidos visibles</option>
+            <option value="cancelados" <?= $vista === 'cancelados' ? 'selected' : '' ?>>Pedidos cancelados</option>
             <option value="archivados" <?= $vista === 'archivados' ? 'selected' : '' ?>>Pedidos archivados</option>
             <option value="todos" <?= $vista === 'todos' ? 'selected' : '' ?>>Todos</option>
         </select>
@@ -471,6 +480,7 @@ if (!empty($parametros)) {
             $base_estado = '&estado=' . urlencode($estado_filtro);
         ?>
         <a class="chip <?= $vista === 'activos' ? 'active' : '' ?>" href="?vista=activos<?= $base_estado . $base_q ?>">Activos</a>
+        <a class="chip <?= $vista === 'cancelados' ? 'active' : '' ?>" href="?vista=cancelados<?= $base_estado . $base_q ?>">Cancelados</a>
         <a class="chip <?= $vista === 'archivados' ? 'active' : '' ?>" href="?vista=archivados<?= $base_estado . $base_q ?>">Archivados</a>
         <a class="chip <?= $vista === 'todos' ? 'active' : '' ?>" href="?vista=todos<?= $base_estado . $base_q ?>">Todos</a>
     </div>
@@ -555,13 +565,13 @@ if (!empty($parametros)) {
                     <a class="whatsapp-link" href="<?= htmlspecialchars($link_whatsapp) ?>" target="_blank" rel="noopener">📲 Enviar WhatsApp al cliente</a>
                 <?php endif; ?>
 
-                <?php if ($estado_actual === 'entregado' || (int) ($row['archivado'] ?? 0) === 1): ?>
+                <?php if (in_array($estado_actual, ['entregado', 'cancelado'], true) || (int) ($row['archivado'] ?? 0) === 1): ?>
                     <form method="POST" action="">
                         <input type="hidden" name="accion" value="archivar">
                         <input type="hidden" name="orden_id" value="<?= intval($row['id_orden']) ?>">
                         <input type="hidden" name="archivar" value="<?= (int) ($row['archivado'] ?? 0) === 1 ? 0 : 1 ?>">
                         <button type="submit" class="archive-button">
-                            <?= (int) ($row['archivado'] ?? 0) === 1 ? 'Desarchivar pedido' : 'Archivar pedido entregado' ?>
+                            <?= (int) ($row['archivado'] ?? 0) === 1 ? 'Desarchivar pedido' : 'Archivar pedido' ?>
                         </button>
                     </form>
                 <?php endif; ?>
