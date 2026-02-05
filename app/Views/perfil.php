@@ -55,6 +55,7 @@ body { background:#111; color:white; font-family:Arial; }
     background:#ff0080;
     padding:10px 25px;
     border-radius:10px;
+    text-decoration: none;
     border:none;
     color:#fff;
     cursor:pointer;

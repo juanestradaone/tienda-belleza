@@ -363,13 +363,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 10px;
             margin-bottom: 12px;
         }
-
         .actions {
             display: flex;
             justify-content: flex-end;
             gap: 12px;
             margin-top: 10px;
         }
+
+        .btn-volver-carrito {
+          background: linear-gradient(135deg, #ff1493, #ff69b4);
+            border: none;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        
 
         .btn {
             background: linear-gradient(135deg, #ff1493, #ff69b4);
@@ -380,6 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             cursor: pointer;
         }
+
 
         .muted {
             color: #cfcfcf;
@@ -480,6 +493,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="actions">
             <button class="btn" type="submit">Continuar al pago</button>
+            <a href="carrito.php" class="btn-volver-carrito">⬅ Volver al carrito</a>
         </div>
     </form>
 </div>

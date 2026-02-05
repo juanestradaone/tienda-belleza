@@ -85,6 +85,7 @@ input {
     width:120px;
     height:120px;
     border-radius:50%;
+    text-decoration: none;
     object-fit:cover;
     border:2px solid #ff0080;
     margin-bottom:10px;
@@ -93,6 +94,7 @@ input {
 button {
     background:#ff0080;
     border:none;
+    text-decoration: none;
     padding:12px 25px;
     border-radius:10px;
     color:#fff;
