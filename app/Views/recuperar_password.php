@@ -2,6 +2,155 @@
 session_start();
 require __DIR__ . '/../Config/conexion.php';
 
+function smtpConfig(): array
+{
+    return [
+        'host' => getenv('SMTP_HOST') ?: '',
+        'port' => (int) (getenv('SMTP_PORT') ?: 587),
+        'username' => getenv('SMTP_USER') ?: '',
+        'password' => getenv('SMTP_PASS') ?: '',
+        'from_email' => getenv('SMTP_FROM_EMAIL') ?: (getenv('SMTP_USER') ?: ''),
+        'from_name' => getenv('SMTP_FROM_NAME') ?: 'Belleza y Glamour Angelita',
+        'secure' => getenv('SMTP_SECURE') ?: 'tls', // tls|ssl|none
+    ];
+}
+
+function smtpSend(string $toEmail, string $subject, string $body): bool
+{
+    $config = smtpConfig();
+
+    if ($config['host'] === '' || $config['username'] === '' || $config['password'] === '' || $config['from_email'] === '') {
+        return false;
+    }
+
+    $transport = $config['secure'] === 'ssl' ? 'ssl://' : '';
+    $fp = @fsockopen($transport . $config['host'], $config['port'], $errno, $errstr, 15);
+
+    if (!$fp) {
+        return false;
+    }
+
+    $read = function () use ($fp): string {
+        $data = '';
+        while ($line = fgets($fp, 515)) {
+            $data .= $line;
+            if (preg_match('/^\d{3}\s/', $line)) {
+                break;
+            }
+        }
+
+        return $data;
+    };
+
+    $send = function (string $command) use ($fp, $read): string {
+        fwrite($fp, $command . "\r\n");
+        return $read();
+    };
+
+    $isOk = static function (string $response): bool {
+        return preg_match('/^(220|235|250|334|354)/', $response) === 1;
+    };
+
+    $resp = $read();
+    if (!$isOk($resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send('EHLO localhost');
+    if (!$isOk($resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    if ($config['secure'] === 'tls') {
+        $resp = $send('STARTTLS');
+        if (!preg_match('/^220/', $resp)) {
+            fclose($fp);
+            return false;
+        }
+
+        if (!stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            fclose($fp);
+            return false;
+        }
+
+        $resp = $send('EHLO localhost');
+        if (!$isOk($resp)) {
+            fclose($fp);
+            return false;
+        }
+    }
+
+    $resp = $send('AUTH LOGIN');
+    if (!preg_match('/^334/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send(base64_encode($config['username']));
+    if (!preg_match('/^334/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send(base64_encode($config['password']));
+    if (!preg_match('/^235/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send('MAIL FROM:<' . $config['from_email'] . '>');
+    if (!preg_match('/^250/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send('RCPT TO:<' . $toEmail . '>');
+    if (!preg_match('/^(250|251)/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $resp = $send('DATA');
+    if (!preg_match('/^354/', $resp)) {
+        fclose($fp);
+        return false;
+    }
+
+    $headers = [
+        'From: ' . $config['from_name'] . ' <' . $config['from_email'] . '>',
+        'To: <' . $toEmail . '>',
+        'Subject: ' . $subject,
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+    ];
+
+    $messageData = implode("\r\n", $headers) . "\r\n\r\n" . $body . "\r\n.";
+    $resp = $send($messageData);
+
+    $send('QUIT');
+    fclose($fp);
+
+    return preg_match('/^250/', $resp) === 1;
+}
+
+function sendRecoveryCodeEmail(string $email, string $codigo): bool
+{
+    $subject = 'Codigo para recuperar tu contrasena';
+    $mensaje = "Hola,\n\nTu codigo de recuperacion es: {$codigo}\n\nEste codigo vence en 10 minutos.\nSi no solicitaste este cambio, ignora este correo.";
+
+    if (smtpSend($email, $subject, $mensaje)) {
+        return true;
+    }
+
+    $headers = "From: no-reply@tienda-belleza.com\r\n" .
+               "Reply-To: no-reply@tienda-belleza.com\r\n" .
+               "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    return mail($email, $subject, $mensaje, $headers);
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php?msg=⚠️ Solicitud no válida');
     exit;
@@ -35,19 +184,13 @@ if ($accion === 'solicitar') {
         'expira_en' => time() + (10 * 60),
     ];
 
-    $subject = 'Código para recuperar tu contraseña';
-    $mensaje = "Hola,\n\nTu código de recuperación es: {$codigo}\n\nEste código vence en 10 minutos.\nSi no solicitaste este cambio, ignora este correo.";
-    $headers = "From: no-reply@tienda-belleza.com\r\n" .
-               "Reply-To: no-reply@tienda-belleza.com\r\n" .
-               "Content-Type: text/plain; charset=UTF-8\r\n";
-
-    if (@mail($email, $subject, $mensaje, $headers)) {
+    if (sendRecoveryCodeEmail($email, $codigo)) {
         header('Location: index.php?msg=✅ Código enviado al correo#recuperar');
         exit;
     }
 
     unset($_SESSION['password_reset'][$email]);
-    header('Location: index.php?msg=❌ No se pudo enviar el correo. Verifica la configuración del servidor.#recuperar');
+    header('Location: index.php?msg=❌ No se pudo enviar el correo. Configura SMTP_HOST, SMTP_USER y SMTP_PASS en el servidor.#recuperar');
     exit;
 }
 
