@@ -70,6 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="password" placeholder="Contraseña" required />
 
             <button type="submit">Ingresar</button>
+            <p><a href="#recuperar">¿Olvidaste tu contraseña?</a></p>
 
             <!-- BOTÓN GOOGLE LOGIN -->
          <div class="google-wrapper">
@@ -104,15 +105,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
 
         <!-- RECUPERAR -->
-        <form class="formulario" id="recuperar">
+        <form method="POST" action="recuperar_password.php" class="formulario" id="recuperar">
             <img src="imagenes/logo.jpg" alt="Logo de la tienda" class="logo">
             <h2>Recuperar Contraseña</h2>
 
-            <input type="email" placeholder="Correo registrado" required />
-            <button type="submit">Enviar enlace de recuperación</button>
+            <input type="hidden" name="accion" value="solicitar" />
+            <input type="email" name="email" placeholder="Correo registrado" required />
+            <button type="submit">Enviar código de 6 dígitos</button>
+
+            <hr style="margin: 16px 0; border: 0; border-top: 1px solid #ddd;" />
+            <h3 style="margin-bottom: 10px;">Ingresa el código recibido</h3>
+
+            <input type="hidden" name="accion" value="restablecer" form="form-restablecer" />
+            <input type="email" name="email" placeholder="Correo registrado" required form="form-restablecer" />
+            <input type="text" name="codigo" placeholder="Código de 6 dígitos" pattern="\d{6}" maxlength="6" required form="form-restablecer" />
+            <input type="password" name="password" placeholder="Nueva contraseña" minlength="6" required form="form-restablecer" />
+            <input type="password" name="password_confirm" placeholder="Confirmar contraseña" minlength="6" required form="form-restablecer" />
+            <button type="submit" form="form-restablecer">Restablecer contraseña</button>
 
             <p>Volver a <a href="#login-form">iniciar sesión</a></p>
         </form>
+
+        <form method="POST" action="recuperar_password.php" id="form-restablecer" style="display: none;"></form>
 
     </div>
 
