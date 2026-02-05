@@ -151,6 +151,15 @@ function sendRecoveryCodeEmail(string $email, string $codigo): bool
     return mail($email, $subject, $mensaje, $headers);
 }
 
+function isLocalEnvironment(): bool
+{
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $serverName = $_SERVER['SERVER_NAME'] ?? '';
+
+    return str_contains($host, 'localhost') || str_contains($host, '127.0.0.1')
+        || str_contains($serverName, 'localhost') || str_contains($serverName, '127.0.0.1');
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php?msg=⚠️ Solicitud no válida');
     exit;
@@ -186,6 +195,16 @@ if ($accion === 'solicitar') {
 
     if (sendRecoveryCodeEmail($email, $codigo)) {
         header('Location: index.php?msg=✅ Código enviado al correo#recuperar');
+        exit;
+    }
+
+    if (isLocalEnvironment()) {
+        $_SESSION['password_reset_debug'][$email] = [
+            'codigo' => $codigo,
+            'expira_en' => time() + (10 * 60),
+        ];
+
+        header('Location: index.php?msg=⚠️ No se pudo enviar correo en este servidor. Código temporal (solo desarrollo): ' . $codigo . '#recuperar');
         exit;
     }
 
