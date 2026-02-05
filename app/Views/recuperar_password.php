@@ -15,11 +15,23 @@ function smtpConfig(): array
     ];
 }
 
-function smtpSend(string $toEmail, string $subject, string $body): bool
+function isDevelopmentEnvironment(): bool
+{
+    $appEnv = strtolower((string) getenv('APP_ENV'));
+
+    if ($appEnv === '' || $appEnv === 'local' || $appEnv === 'dev' || $appEnv === 'development') {
+        return true;
+    }
+
+    return false;
+}
+
+function smtpSend(string $toEmail, string $subject, string $body, ?string &$error = null): bool
 {
     $config = smtpConfig();
 
     if ($config['host'] === '' || $config['username'] === '' || $config['password'] === '' || $config['from_email'] === '') {
+        $error = 'SMTP incompleto (faltan credenciales).';
         return false;
     }
 
@@ -27,6 +39,7 @@ function smtpSend(string $toEmail, string $subject, string $body): bool
     $fp = @fsockopen($transport . $config['host'], $config['port'], $errno, $errstr, 15);
 
     if (!$fp) {
+        $error = 'No se pudo conectar al SMTP: ' . $errstr . ' (' . $errno . ')';
         return false;
     }
 
@@ -47,18 +60,16 @@ function smtpSend(string $toEmail, string $subject, string $body): bool
         return $read();
     };
 
-    $isOk = static function (string $response): bool {
-        return preg_match('/^(220|235|250|334|354)/', $response) === 1;
-    };
-
     $resp = $read();
-    if (!$isOk($resp)) {
+    if (!preg_match('/^220/', $resp)) {
+        $error = 'SMTP respuesta inicial inválida: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send('EHLO localhost');
-    if (!$isOk($resp)) {
+    if (!preg_match('/^250/', $resp)) {
+        $error = 'EHLO rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
@@ -66,17 +77,20 @@ function smtpSend(string $toEmail, string $subject, string $body): bool
     if ($config['secure'] === 'tls') {
         $resp = $send('STARTTLS');
         if (!preg_match('/^220/', $resp)) {
+            $error = 'STARTTLS rechazado: ' . trim($resp);
             fclose($fp);
             return false;
         }
 
         if (!stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            $error = 'No se pudo negociar TLS con el servidor SMTP.';
             fclose($fp);
             return false;
         }
 
         $resp = $send('EHLO localhost');
-        if (!$isOk($resp)) {
+        if (!preg_match('/^250/', $resp)) {
+            $error = 'EHLO post-TLS rechazado: ' . trim($resp);
             fclose($fp);
             return false;
         }
@@ -84,36 +98,42 @@ function smtpSend(string $toEmail, string $subject, string $body): bool
 
     $resp = $send('AUTH LOGIN');
     if (!preg_match('/^334/', $resp)) {
+        $error = 'AUTH LOGIN rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send(base64_encode($config['username']));
     if (!preg_match('/^334/', $resp)) {
+        $error = 'Usuario SMTP rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send(base64_encode($config['password']));
     if (!preg_match('/^235/', $resp)) {
+        $error = 'Password SMTP rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send('MAIL FROM:<' . $config['from_email'] . '>');
     if (!preg_match('/^250/', $resp)) {
+        $error = 'MAIL FROM rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send('RCPT TO:<' . $toEmail . '>');
     if (!preg_match('/^(250|251)/', $resp)) {
+        $error = 'RCPT TO rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
 
     $resp = $send('DATA');
     if (!preg_match('/^354/', $resp)) {
+        $error = 'DATA rechazado: ' . trim($resp);
         fclose($fp);
         return false;
     }
@@ -132,32 +152,33 @@ function smtpSend(string $toEmail, string $subject, string $body): bool
     $send('QUIT');
     fclose($fp);
 
-    return preg_match('/^250/', $resp) === 1;
+    if (!preg_match('/^250/', $resp)) {
+        $error = 'No se aceptó el contenido del correo: ' . trim($resp);
+        return false;
+    }
+
+    return true;
 }
 
-function sendRecoveryCodeEmail(string $email, string $codigo): bool
+function sendRecoveryCodeEmail(string $email, string $codigo): array
 {
     $subject = 'Codigo para recuperar tu contrasena';
     $mensaje = "Hola,\n\nTu codigo de recuperacion es: {$codigo}\n\nEste codigo vence en 10 minutos.\nSi no solicitaste este cambio, ignora este correo.";
 
-    if (smtpSend($email, $subject, $mensaje)) {
-        return true;
+    $smtpError = '';
+    if (smtpSend($email, $subject, $mensaje, $smtpError)) {
+        return ['sent' => true, 'error' => ''];
     }
 
     $headers = "From: no-reply@tienda-belleza.com\r\n" .
                "Reply-To: no-reply@tienda-belleza.com\r\n" .
                "Content-Type: text/plain; charset=UTF-8\r\n";
 
-    return mail($email, $subject, $mensaje, $headers);
-}
+    if (mail($email, $subject, $mensaje, $headers)) {
+        return ['sent' => true, 'error' => ''];
+    }
 
-function isLocalEnvironment(): bool
-{
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    $serverName = $_SERVER['SERVER_NAME'] ?? '';
-
-    return str_contains($host, 'localhost') || str_contains($host, '127.0.0.1')
-        || str_contains($serverName, 'localhost') || str_contains($serverName, '127.0.0.1');
+    return ['sent' => false, 'error' => $smtpError !== '' ? $smtpError : 'mail() también falló.'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -193,17 +214,16 @@ if ($accion === 'solicitar') {
         'expira_en' => time() + (10 * 60),
     ];
 
-    if (sendRecoveryCodeEmail($email, $codigo)) {
+    $sendResult = sendRecoveryCodeEmail($email, $codigo);
+
+    if ($sendResult['sent']) {
         header('Location: index.php?msg=✅ Código enviado al correo#recuperar');
         exit;
     }
 
-    if (isLocalEnvironment()) {
-        $_SESSION['password_reset_debug'][$email] = [
-            'codigo' => $codigo,
-            'expira_en' => time() + (10 * 60),
-        ];
+    error_log('[RECUPERAR_PASSWORD] Fallo envío de correo para ' . $email . ': ' . $sendResult['error']);
 
+    if (isDevelopmentEnvironment()) {
         header('Location: index.php?msg=⚠️ No se pudo enviar correo en este servidor. Código temporal (solo desarrollo): ' . $codigo . '#recuperar');
         exit;
     }
