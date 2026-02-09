@@ -83,8 +83,14 @@ session_start();
 		gap: 0.5rem;
 		min-height: 3rem;
 		white-space: nowrap;
+		height: 3rem;
 	}
 
+	.menu a.carrito-btn {
+		padding: 0.8rem 1.5rem;
+		height: 3rem;
+		min-height: 3rem;
+	}
 
 	.menu a:hover {
 		background: transparent;
