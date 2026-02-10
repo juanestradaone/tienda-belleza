@@ -79,7 +79,7 @@ $nombreSeguro = htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8');
     <script>
         setTimeout(function () {
             window.location.href = 'inicio.php';
-        }, 2500);
+        }, 3000);
     </script>
 </body>
 </html>
