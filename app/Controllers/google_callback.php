@@ -59,6 +59,6 @@ if ($result->num_rows > 0) {
     $_SESSION["foto"]    = $foto;
 }
 
-header("Location: inicio.php");
+header("Location: bienvenido.php");
 exit;
 ?>
