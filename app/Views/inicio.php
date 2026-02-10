@@ -246,6 +246,20 @@ session_start();
 
 	.map-wrapper iframe { width:100%; height:100%; min-height:320px; border:0; border-radius:8px; }
 
+	
+	.map-card {
+		background: linear-gradient(180deg, rgba(17,17,17,0.9), rgba(27,27,27,0.85));
+		border-radius: 14px;
+		padding: 1rem;
+		box-shadow: 0 10px 30px rgba(238, 111, 227, 0.6), 0 0 20px rgba(255,20,147,0.06) inset;
+		border: 1px solid rgba(255,20,147,0.06);
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+		
+	}
+
+	
 	/* RESPONSIVE */
 	@media (max-width: 768px) {
 		.carousel-slide img { height: 260px; }
@@ -477,8 +491,7 @@ function toggleMenu() {
 		<div class="map-card">
 			<h3 style="color:#fff; margin:0 0 0.6rem 0;">Nuestra ubicación</h3>
 			<div class="map-wrapper">
-				<!-- Reemplaza el parámetro q por la dirección real o coordenadas -->
-				<iframe src="https://www.google.com/maps/embed?pb=!4v1763566737988!6m8!1m7!1so5Xw_dtelpeVUZtpW6aj4A!2m2!1d4.442859439867629!2d-75.20244994875287!3f90.94436917003374!4f9.320920750015588!5f0.7820865974627469" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+				<iframe src="https://www.google.com/maps?q=4.442859439867629,-75.20244994875287&z=17&output=embed" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 			</div>
 		</div>
 	</section>
