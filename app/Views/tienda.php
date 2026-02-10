@@ -83,7 +83,7 @@ if (!$result) {
         gap: 1.2rem;
         margin-top: 1rem;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: center;
     }
 
     .menu a {
@@ -173,13 +173,13 @@ if (!$result) {
 /* Contenedor del buscador */
 .search-container {
     position: relative;
-    width: 260px;
+    width: min(360px, 100%);
     transition: width 0.3s ease;
 }
 
 /* Animación al enfocarse */
 .search-container.active {
-    width: 350px;
+    width: min(420px, 100%);
 }
 
 /* Input del buscador */
@@ -247,11 +247,14 @@ if (!$result) {
     }
 
     .producto-card {
+        display: flex;
+        flex-direction: column;
         background: #111;
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 0 25px rgba(255, 20, 147, 0.1);
         transition: all 0.4s ease;
+        height: 100%;
     }
 
     .producto-card:hover {
@@ -259,8 +262,12 @@ if (!$result) {
         box-shadow: 0 0 35px rgba(255, 20, 147, 0.3);
     }
 
+    .producto-imagen {
+        width: 100%;
+    }
+
     .producto-imagen img {
-        width: auto;
+        width: 100%;
         height: 280px;
         object-fit: cover;
         transition: all 0.5s ease;
@@ -272,6 +279,10 @@ if (!$result) {
 
     .producto-info {
         padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        flex: 1;
     }
 
     .producto-info h3 {
@@ -381,13 +392,97 @@ if (!$result) {
     .sr-only { position: absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
     /* RESPONSIVE */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
+        .hero {
+            margin: 1.5rem;
+            padding: 2.25rem 1.5rem;
+        }
+
         .productos-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        header {
+            padding: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            margin-top: 0.35rem;
+        }
+
+        .menu {
+            gap: 0.6rem;
+            justify-content: center;
+        }
+
+        .menu a {
+            width: 100%;
+            justify-content: center;
+            height: auto;
+            min-height: 2.8rem;
+            padding: 0.7rem 1rem;
+        }
+
+        .hero {
+            margin: 1rem;
+            padding: 1.5rem 1rem;
+        }
+
+        .productos-grid {
+            grid-template-columns: 1fr;
         }
 
         .hero h2 {
             font-size: 1.8rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        .filtro-btn {
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .search-container,
+        .search-container.active {
+            width: 100%;
+        }
+
+        .contenedor-productos {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            font-size: 16px;
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+        }
+
+        .producto-imagen img {
+            height: 220px;
+        }
+
+        .producto-info h3 {
+            font-size: 1.1rem;
+        }
+
+        .precio-actual {
+            font-size: 1.4rem;
         }
     }
     /* NOTIFICACIÓN DE PRODUCTO AGREGADO */
@@ -455,19 +550,21 @@ if (!$result) {
     <p>Descubre nuestra colección exclusiva de belleza y cuidado personal</p>
     
     <div class="categorias-filtro">
-        <button class="filtro-btn active" onclick="filtrarProductos('todos')">✨ Todos</button>
-        <button class="filtro-btn" onclick="filtrarProductos('maquillaje')">💄 Maquillaje</button>
-        <button class="filtro-btn" onclick="filtrarProductos('facial')">🧴 Facial</button>
-        <button class="filtro-btn" onclick="filtrarProductos('corporal')">💆🏻‍♀️ Corporal</button>
-        <button class="filtro-btn" onclick="filtrarProductos('uñas')">💅 Uñas</button>
-        <button class="filtro-btn" onclick="filtrarProductos('cabello')">💇‍♀️ Cabello</button>
-        
-    <div class="search-container" id="searchBox">
-    <input type="text" id="buscador" class="search-input" placeholder="🔍Buscar productos...">
-    <button id="clearBtn" class="clear-btn">❌</button>
-</div>
+        <button class="filtro-btn active" onclick="filtrarProductos(event, 'todos')">✨ Todos</button>
+        <button class="filtro-btn" onclick="filtrarProductos(event, 'maquillaje')">💄 Maquillaje</button>
+        <button class="filtro-btn" onclick="filtrarProductos(event, 'facial')">🧴 Facial</button>
+        <button class="filtro-btn" onclick="filtrarProductos(event, 'corporal')">💆🏻‍♀️ Corporal</button>
+        <button class="filtro-btn" onclick="filtrarProductos(event, 'uñas')">💅 Uñas</button>
+        <button class="filtro-btn" onclick="filtrarProductos(event, 'cabello')">💇‍♀️ Cabello</button>
+    </div>
 
-<p id="noResults" class="no-results">No se encontraron resultados</p>
+    <div class="search-container" id="searchBox">
+        <input type="text" id="buscador" class="search-input" placeholder="🔍Buscar productos...">
+        <button id="clearBtn" class="clear-btn">❌</button>
+    </div>
+
+    <p id="noResults" class="no-results">No se encontraron resultados</p>
+</section>
 
 
 <!-- PRODUCTOS -->
@@ -549,13 +646,15 @@ if (!$result) {
 
 <script>
     // Función para filtrar productos por categoría
-    function filtrarProductos(categoria) {
+    function filtrarProductos(event, categoria) {
         const productos = document.querySelectorAll('.producto-card');
         const botones = document.querySelectorAll('.filtro-btn');
 
         // Actualizar botón activo
         botones.forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
 
         // Filtrar productos con animación
         productos.forEach((producto, index) => {

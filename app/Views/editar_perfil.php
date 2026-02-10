@@ -96,7 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$foto_url = !empty($foto_actual) ? 'imagenes/usuarios/' . $foto_actual : 'imagenes/usuarios/default.png';
+$foto_url = 'imagenes/usuarios/default.png';
+
+if (!empty($foto_actual)) {
+    if (filter_var($foto_actual, FILTER_VALIDATE_URL)) {
+        $foto_url = $foto_actual;
+    } elseif (is_file(__DIR__ . '/../../imagenes/usuarios/' . $foto_actual)) {
+        $foto_url = 'imagenes/usuarios/' . $foto_actual;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -148,6 +156,19 @@ $foto_url = !empty($foto_actual) ? 'imagenes/usuarios/' . $foto_actual : 'imagen
         place-items: center;
         gap: 10px;
         margin-bottom: 18px;
+    }
+
+    .avatar-fallback {
+        width: 132px;
+        height: 132px;
+        border-radius: 50%;
+        border: 3px solid #ff2a98;
+        box-shadow: 0 10px 22px rgba(255, 42, 152, 0.35);
+        background: radial-gradient(circle at 30% 20%, #ff74b8, #ff0f8f);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
     }
 
     .foto-perfil {
@@ -260,7 +281,8 @@ $foto_url = !empty($foto_actual) ? 'imagenes/usuarios/' . $foto_actual : 'imagen
 
     <form method="POST" enctype="multipart/form-data">
         <div class="avatar-block">
-            <img src="<?= htmlspecialchars($foto_url) ?>" class="foto-perfil" alt="Foto de perfil">
+            <img src="<?= htmlspecialchars($foto_url) ?>" class="foto-perfil" alt="Foto de perfil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="avatar-fallback" aria-hidden="true">👤</div>
             <span class="hint">Correo de la cuenta: <?= htmlspecialchars($email) ?></span>
         </div>
 

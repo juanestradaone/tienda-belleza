@@ -30,7 +30,15 @@ $stmt->bind_result($nombre, $apellido, $apodo, $email, $telefono, $direccion, $f
 $stmt->fetch();
 $stmt->close();
 
-$foto_url = $foto ? 'imagenes/usuarios/' . $foto : 'imagenes/usuarios/default.png';
+$foto_url = 'imagenes/usuarios/default.png';
+
+if (!empty($foto)) {
+    if (filter_var($foto, FILTER_VALIDATE_URL)) {
+        $foto_url = $foto;
+    } elseif (is_file(__DIR__ . '/../../imagenes/usuarios/' . $foto)) {
+        $foto_url = 'imagenes/usuarios/' . $foto;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -64,6 +72,18 @@ body {
 }
 .titulo h2 { margin: 0; color: #ff74b8; }
 .foto-wrapper { display: grid; place-items: center; margin-bottom: 16px; }
+.avatar-fallback {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    border: 3px solid #ff2a98;
+    box-shadow: 0 10px 22px rgba(255, 42, 152, 0.35);
+    background: radial-gradient(circle at 30% 20%, #ff74b8, #ff0f8f);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
 .foto-perfil {
     width: 132px;
     height: 132px;
@@ -113,7 +133,8 @@ body {
     </div>
 
     <div class="foto-wrapper">
-        <img src="<?= htmlspecialchars($foto_url) ?>" class="foto-perfil" alt="Foto de perfil">
+        <img src="<?= htmlspecialchars($foto_url) ?>" class="foto-perfil" alt="Foto de perfil" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-fallback" aria-hidden="true">👤</div>
     </div>
 
     <div class="grid">
