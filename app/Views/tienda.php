@@ -172,48 +172,40 @@ if (!$result) {
   
 /* Contenedor del buscador */
 .search-container {
-    position: relative;
-    width: min(360px, 100%);
-    transition: width 0.3s ease;
-}
-
-/* Animación al enfocarse */
-.search-container.active {
-    width: min(420px, 100%);
+    display: grid;
+    grid-template-columns: 1fr 56px;
+    width: min(560px, 100%);
+    margin: 1.2rem auto 0;
+    border: 2px solid #111;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
 }
 
 /* Input del buscador */
 .search-input {
     width: 100%;
-    padding: 10px 40px 10px 15px;
-    border: 2px solid #ff0099;
-    background: #0d0d0d;
-    border-radius: 30px;
-    color: #fff;
+    padding: 10px 14px;
+    border: none;
+    background: #fff;
+    color: #111;
     font-size: 15px;
     outline: none;
-    box-shadow: 0 0 10px #ff0099aa;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* Glow al activar */
-.search-container.active .search-input {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #ff0099ee;
-}
-
-/* Botón limpiar ❌ */
-.clear-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
+.search-btn {
     border: none;
-    font-size: 18px;
-    color: #ff66c4;
+    border-left: 1px solid #e7e7e7;
+    background: #111;
+    color: #fff;
+    font-size: 22px;
     cursor: pointer;
-    display: none;
+    display: grid;
+    place-items: center;
+}
+
+.search-btn:hover {
+    background: #252525;
 }
 
 /* Result Box */
@@ -269,12 +261,16 @@ if (!$result) {
     .producto-imagen img {
         width: 100%;
         height: 280px;
-        object-fit: cover;
-        transition: all 0.5s ease;
+        object-fit: contain;
+        object-position: center;
+        image-rendering: auto;
+        background: #1b1b1b;
+        padding: 0.65rem;
+        transition: transform 0.25s ease;
     }
 
     .producto-card:hover .producto-imagen img {
-        transform: scale(1.1);
+        transform: scale(1.02);
     }
 
     .producto-info {
@@ -454,9 +450,9 @@ if (!$result) {
             max-width: 320px;
         }
 
-        .search-container,
-        .search-container.active {
+        .search-container {
             width: 100%;
+            grid-template-columns: 1fr 52px;
         }
 
         .contenedor-productos {
@@ -559,8 +555,8 @@ if (!$result) {
     </div>
 
     <div class="search-container" id="searchBox">
-        <input type="text" id="buscador" class="search-input" placeholder="🔍Buscar productos...">
-        <button id="clearBtn" class="clear-btn">❌</button>
+        <input type="text" id="buscador" class="search-input" placeholder="Buscar productos...">
+        <button id="searchBtn" class="search-btn" type="button" aria-label="Buscar">⌕</button>
     </div>
 
     <p id="noResults" class="no-results">No se encontraron resultados</p>
@@ -732,62 +728,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     
-// ------- Animación al abrir -------
+// ------- Buscador de productos -------
 const searchInput = document.getElementById("buscador");
-const searchContainer = document.getElementById("searchBox");
-const clearBtn = document.getElementById("clearBtn");
+const searchBtn = document.getElementById("searchBtn");
 const noResultsText = document.getElementById("noResults");
 
-// Activar animación al enfocar
-searchInput.addEventListener("focus", () => {
-    searchContainer.classList.add("active");
-});
-
-// Quitar animación si el input queda vacío
-searchInput.addEventListener("blur", () => {
-    if (searchInput.value === "") {
-        searchContainer.classList.remove("active");
-    }
-});
-
-// ------- Botón ❌ limpiar -------
-searchInput.addEventListener("input", () => {
-    clearBtn.style.display = searchInput.value.length > 0 ? "block" : "none";
-});
-
-clearBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    clearBtn.style.display = "none";
-    noResultsText.style.display = "none";
-    filterProducts(""); 
-});
-
-// ------- Filtro + mensaje "No se encontraron resultados" -------
-function filterProducts(query) {
-    const cards = document.querySelectorAll(".producto-card");
-    let visibles = 0;
-
-    cards.forEach(card => {
-        const name = card.querySelector("h3").textContent.toLowerCase();
-
-        if (name.includes(query.toLowerCase())) {
-            card.style.display = "block";
-            visibles++;
-        } else {
-            card.style.display = "none";
-        }
-    });
-
-    // Mensaje de "No se encontraron resultados"
-    noResultsText.style.display = (visibles === 0 && query !== "") ? "block" : "none";
-}
-
-// Filtrar a medida que se escribe
-searchInput.addEventListener("input", () => {
-    filterProducts(searchInput.value);
-});
-
-// ------- Filtro + mensaje "No se encontraron resultados" -------
 function filterProducts(query) {
     const cards = document.querySelectorAll(".producto-card");
     let visibles = 0;
@@ -796,15 +741,13 @@ function filterProducts(query) {
         const titleElement = card.querySelector("h3");
         const originalText = titleElement.dataset.original || titleElement.textContent;
 
-        // Guardar texto original (solo una vez)
         if (!titleElement.dataset.original) {
             titleElement.dataset.original = originalText;
         }
 
-        // Si el campo está vacío → mostrar todos y restaurar texto
         if (query.trim() === "") {
             titleElement.innerHTML = originalText;
-            card.style.display = "block";
+            card.style.display = "flex";
             visibles++;
             return;
         }
@@ -812,17 +755,13 @@ function filterProducts(query) {
         const lowerOriginal = originalText.toLowerCase();
         const lowerQuery = query.toLowerCase();
 
-        // Coincidencia
         if (lowerOriginal.includes(lowerQuery)) {
-            card.style.display = "block";
+            card.style.display = "flex";
             visibles++;
-
-            // Resaltar coincidencias
             const highlighted = originalText.replace(
                 new RegExp(query, "gi"),
                 match => `<span class="highlight">${match}</span>`
             );
-
             titleElement.innerHTML = highlighted;
         } else {
             card.style.display = "none";
@@ -830,9 +769,23 @@ function filterProducts(query) {
         }
     });
 
-    // Mostrar mensaje "No se encontraron resultados"
     noResultsText.style.display = (visibles === 0) ? "block" : "none";
 }
+
+searchInput.addEventListener("input", () => {
+    filterProducts(searchInput.value);
+});
+
+searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        filterProducts(searchInput.value);
+    }
+});
+
+searchBtn.addEventListener("click", () => {
+    filterProducts(searchInput.value);
+});
 
 
 </script>
