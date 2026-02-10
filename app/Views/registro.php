@@ -19,25 +19,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $checkEmail->store_result();
 
     if ($checkEmail->num_rows > 0) {
-        echo "<script>
-                alert('⚠️ Este correo ya está registrado.');
-                window.location.href = 'index.php';
-              </script>";
+        header('Location: index.php');
+        exit;
     } else {
         // Insertar usuario
         $sql = $conn->prepare("INSERT INTO usuarios (nombre, apellido, direccion, email, telefono, contrasena) VALUES (?, ?, ?, ?, ?, ?)");
         $sql->bind_param("ssssss", $nombre, $apellido, $direccion, $email, $telefono, $password);
 
         if ($sql->execute()) {
-            echo "<script>
-                    alert('✅ Usuario registrado con éxito. Ahora puedes iniciar sesión.');
-                    window.location.href = 'index.php';
-                  </script>";
+            header('Location: index.php');
+            exit;
         } else {
-            echo "<script>
-                    alert('❌ Error al registrar el usuario. Inténtalo de nuevo.');
-                    window.location.href = 'index.php';
-                  </script>";
+            header('Location: index.php');
+            exit;
         }
 
         $sql->close();
@@ -46,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $checkEmail->close();
     $conn->close();
 } else {
-    echo "⚠️ No se recibieron datos del formulario.";
+    header('Location: index.php');
+    exit;
 }
 ?>

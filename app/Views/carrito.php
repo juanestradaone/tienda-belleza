@@ -3,10 +3,7 @@ session_start();
 require __DIR__ . '/../Config/conexion.php';
 
 if (!isset($_SESSION['usuario'])) {
-    echo "<script>
-            alert('⚠️ Debes iniciar sesión para ver tu carrito');
-            window.location.href = 'index.php';
-          </script>";
+    header('Location: index.php');
     exit();
 }
 

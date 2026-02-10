@@ -4,10 +4,7 @@ require __DIR__ . '/../Config/conexion.php';
 
 // 1️⃣ Verificar que el usuario haya iniciado sesión
 if (!isset($_SESSION['usuario'])) {
-    echo "<script>
-            alert('⚠️ Debes iniciar sesión para agregar productos al carrito.');
-            window.location.href = 'index.php';
-          </script>";
+    header('Location: index.php');
     exit;
 }
 
@@ -18,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
 
     // Validar cantidad
     if ($cantidad < 1) {
-        echo "<script>alert('❌ Cantidad no válida.'); window.history.back();</script>";
+        header('Location: tienda.php');
         exit;
     }
 
@@ -81,20 +78,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
             $stmt_insert->execute();
             $stmt_insert->close();
         } else {
-            echo "<script>alert('❌ El producto no existe.'); window.history.back();</script>";
+            header('Location: tienda.php');
             exit;
         }
         $stmt_precio->close();
     }
 
     // 5️⃣ Confirmar y redirigir
-    echo "<script>
-            alert('✅ Producto agregado al carrito correctamente.');
-            window.location.href = 'tienda.php';
-          </script>";
+    header('Location: tienda.php');
+    exit;
 
 } else {
-    echo "<script>alert('⚠️ Solicitud inválida.'); window.location.href = 'tienda.php';</script>";
+    header('Location: tienda.php');
+    exit;
 }
 
 $conn->close();
