@@ -301,11 +301,9 @@ $(document).ready(function() {
     $('.eliminar').click(function() {
         const fila = $(this).closest('tr');
         const idProducto = fila.data('id');
-        if (confirm('¿Seguro que deseas eliminar este producto?')) {
-            $.post('actualizar_carrito.php', {accion: 'eliminar', id_producto: idProducto}, function() {
-                location.reload();
-            });
-        }
+        $.post('actualizar_carrito.php', {accion: 'eliminar', id_producto: idProducto}, function() {
+            location.reload();
+        });
     });
 
 });
