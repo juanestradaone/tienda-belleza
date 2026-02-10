@@ -312,6 +312,79 @@ if (!$result) {
         transform: translateY(-3px);
     }
 
+
+
+    /* SECCIÓN DE AYUDA */
+    .seccion-ayuda {
+        max-width: 1200px;
+        margin: 1rem auto 3rem;
+        padding: 2rem;
+        background: rgba(17, 17, 17, 0.95);
+        border: 1px solid rgba(255, 105, 180, 0.4);
+        border-radius: 18px;
+        box-shadow: 0 0 20px rgba(255, 20, 147, 0.2);
+    }
+
+    .ayuda-header h2 {
+        color: #ff69b4;
+        margin-bottom: 0.8rem;
+        text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+    }
+
+    .ayuda-header p {
+        color: #ddd;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .ayuda-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .ayuda-bloque {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 105, 180, 0.2);
+        border-radius: 12px;
+        padding: 1.2rem;
+    }
+
+    .ayuda-bloque h3 {
+        color: #fff;
+        margin-bottom: 0.8rem;
+    }
+
+    .ayuda-bloque ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .ayuda-bloque li {
+        color: #cfcfcf;
+        margin-bottom: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .ayuda-enlace {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        color: #fff;
+        text-decoration: none;
+        padding: 0.7rem 1.2rem;
+        background: linear-gradient(135deg, #ff1493, #ff69b4);
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .ayuda-enlace:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+    }
+
     /* FOOTER */
     footer {
         background: #111;
@@ -439,6 +512,7 @@ if (!$result) {
         <a href="inicio.php">📍 Inicio</a>
         <a href="tienda.php">🛍️ Productos</a>
         <a href="historial_pedidos.php"> Historial de pedidos</a>
+        <a href="#seccion-ayuda">❓ Ayuda</a>
         <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
             <a href="admin_pedidos.php">🧭 Admin pedidos</a>
         <?php endif; ?>
@@ -511,6 +585,48 @@ if (!$result) {
         <?php endif; ?>
     </div>
 </div>
+
+
+<!-- SECCIÓN DE AYUDA -->
+<section class="seccion-ayuda" id="seccion-ayuda">
+    <div class="ayuda-header">
+        <h2>❓ Centro de Ayuda</h2>
+        <p>Estamos aquí para acompañarte durante toda tu compra. En esta sección encontrarás respuestas rápidas, pasos sencillos y canales de soporte para que tu experiencia sea segura, fácil y agradable.</p>
+        <a class="ayuda-enlace" href="#seccion-ayuda" aria-label="Ir a la sección de ayuda">💬 Ir a Ayuda</a>
+    </div>
+
+    <div class="ayuda-grid">
+        <section class="ayuda-bloque" aria-labelledby="faq-title">
+            <h3 id="faq-title">Preguntas frecuentes (FAQ)</h3>
+            <ul>
+                <li><strong>¿Cómo realizo una compra?</strong><br>Elige tus productos, agrégalos al carrito, confirma tu dirección y método de pago en checkout, y finaliza el pedido.</li>
+                <li><strong>¿Puedo devolver un producto?</strong><br>Sí, aceptamos devoluciones dentro de los primeros 5 días hábiles, siempre que el producto esté en buen estado y con su empaque.</li>
+                <li><strong>¿Cuánto tarda el envío?</strong><br>Los envíos nacionales suelen tardar entre 2 y 5 días hábiles, según la ciudad de destino.</li>
+                <li><strong>¿Qué métodos de pago aceptan?</strong><br>Pago contra entrega, transferencias bancarias y pasarelas habilitadas durante el proceso de compra.</li>
+            </ul>
+        </section>
+
+        <section class="ayuda-bloque" aria-labelledby="soporte-title">
+            <h3 id="soporte-title">Canales de soporte</h3>
+            <ul>
+                <li><strong>Chat en vivo:</strong> Disponible de lunes a sábado, de 9:00 a.m. a 7:00 p.m.</li>
+                <li><strong>WhatsApp:</strong> +57 311 620 8892 para consultas rápidas sobre pedidos y productos.</li>
+                <li><strong>Correo electrónico:</strong> soporte@bellezayglamourangelita.com para solicitudes detalladas.</li>
+                <li><strong>Instagram y Facebook:</strong> Escríbenos por mensaje directo y te responderemos lo antes posible.</li>
+            </ul>
+        </section>
+
+        <section class="ayuda-bloque" aria-labelledby="recomendaciones-title">
+            <h3 id="recomendaciones-title">Recomendaciones antes de contactarnos</h3>
+            <ul>
+                <li>Ten a mano tu número de pedido para darte una atención más rápida.</li>
+                <li>Indica el nombre del producto y el detalle de tu consulta.</li>
+                <li>Si reportas una novedad con el envío, comparte una foto y fecha de recepción.</li>
+            </ul>
+            <p>Queremos que tu experiencia sea excelente de principio a fin. ✨</p>
+        </section>
+    </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
