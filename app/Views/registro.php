@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $checkEmail->store_result();
 
     if ($checkEmail->num_rows > 0) {
-        header('Location: index.php');
+        echo "<script>alert('⚠️ Este correo ya está registrado.'); window.location.href = 'index.php';</script>";
         exit;
     } else {
         // Insertar usuario
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             header('Location: index.php');
             exit;
         } else {
-            header('Location: index.php');
+            echo "<script>alert('❌ Error al registrar el usuario. Inténtalo de nuevo.'); window.location.href = 'index.php';</script>";
             exit;
         }
 

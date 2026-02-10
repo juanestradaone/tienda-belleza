@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
 
     // Validar cantidad
     if ($cantidad < 1) {
-        header('Location: tienda.php');
+        echo "<script>alert('❌ Cantidad no válida.'); window.location.href = 'tienda.php';</script>";
         exit;
     }
 
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
             $stmt_insert->execute();
             $stmt_insert->close();
         } else {
-            header('Location: tienda.php');
+            echo "<script>alert('❌ El producto no existe.'); window.location.href = 'tienda.php';</script>";
             exit;
         }
         $stmt_precio->close();
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
     exit;
 
 } else {
-    header('Location: tienda.php');
+    echo "<script>alert('⚠️ Solicitud inválida.'); window.location.href = 'tienda.php';</script>";
     exit;
 }
 
