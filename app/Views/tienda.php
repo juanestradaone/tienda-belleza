@@ -172,40 +172,47 @@ if (!$result) {
   
 /* Contenedor del buscador */
 .search-container {
-    display: grid;
-    grid-template-columns: 1fr 56px;
-    width: min(560px, 100%);
+    position: relative;
+    width: min(360px, 100%);
     margin: 1.2rem auto 0;
-    border: 2px solid #111;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
+    transition: width 0.3s ease;
+}
+
+/* Animación al enfocarse */
+.search-container.active {
+    width: min(420px, 100%);
 }
 
 /* Input del buscador */
 .search-input {
     width: 100%;
-    padding: 10px 14px;
-    border: none;
-    background: #fff;
-    color: #111;
+    padding: 10px 40px 10px 15px;
+    border: 2px solid #ff0099;
+    background: #0d0d0d;
+    border-radius: 30px;
+    color: #fff;
     font-size: 15px;
     outline: none;
+    box-shadow: 0 0 10px #ff0099aa;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.search-btn {
+.search-container.active .search-input {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff0099ee;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
     border: none;
-    border-left: 1px solid #e7e7e7;
-    background: #111;
-    color: #fff;
-    font-size: 22px;
+    font-size: 18px;
+    color: #ff66c4;
     cursor: pointer;
-    display: grid;
-    place-items: center;
-}
-
-.search-btn:hover {
-    background: #252525;
+    display: none;
 }
 
 /* Result Box */
@@ -264,7 +271,7 @@ if (!$result) {
         object-fit: contain;
         object-position: center;
         image-rendering: auto;
-        background: #1b1b1b;
+        background: #ffffff;
         padding: 0.65rem;
         transition: transform 0.25s ease;
     }
@@ -452,7 +459,10 @@ if (!$result) {
 
         .search-container {
             width: 100%;
-            grid-template-columns: 1fr 52px;
+        }
+
+        .search-container.active {
+            width: 100%;
         }
 
         .contenedor-productos {
@@ -555,8 +565,8 @@ if (!$result) {
     </div>
 
     <div class="search-container" id="searchBox">
-        <input type="text" id="buscador" class="search-input" placeholder="Buscar productos...">
-        <button id="searchBtn" class="search-btn" type="button" aria-label="Buscar">⌕</button>
+        <input type="text" id="buscador" class="search-input" placeholder="🔍Buscar productos...">
+        <button id="clearBtn" class="clear-btn" type="button" aria-label="Limpiar">❌</button>
     </div>
 
     <p id="noResults" class="no-results">No se encontraron resultados</p>
@@ -730,8 +740,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
 // ------- Buscador de productos -------
 const searchInput = document.getElementById("buscador");
-const searchBtn = document.getElementById("searchBtn");
+const searchContainer = document.getElementById("searchBox");
+const clearBtn = document.getElementById("clearBtn");
 const noResultsText = document.getElementById("noResults");
+
+searchInput.addEventListener("focus", () => {
+    searchContainer.classList.add("active");
+});
+
+searchInput.addEventListener("blur", () => {
+    if (searchInput.value === "") {
+        searchContainer.classList.remove("active");
+    }
+});
 
 function filterProducts(query) {
     const cards = document.querySelectorAll(".producto-card");
@@ -773,18 +794,15 @@ function filterProducts(query) {
 }
 
 searchInput.addEventListener("input", () => {
+    clearBtn.style.display = searchInput.value.length > 0 ? "block" : "none";
     filterProducts(searchInput.value);
 });
 
-searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        filterProducts(searchInput.value);
-    }
-});
-
-searchBtn.addEventListener("click", () => {
-    filterProducts(searchInput.value);
+clearBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    clearBtn.style.display = "none";
+    noResultsText.style.display = "none";
+    filterProducts("");
 });
 
 
