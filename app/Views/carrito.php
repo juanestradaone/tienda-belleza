@@ -279,6 +279,9 @@ $productos = $stmt->get_result();
 <script>
 $(document).ready(function() {
 
+    // Evita popups de confirmación del navegador en esta vista
+    window.confirm = function() { return true; };
+
     // Aumentar cantidad
     $('.mas').click(function() {
         const fila = $(this).closest('tr');
