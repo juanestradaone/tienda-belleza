@@ -251,7 +251,7 @@ session_start();
 		background: linear-gradient(180deg, rgba(17,17,17,0.9), rgba(27,27,27,0.85));
 		border-radius: 14px;
 		padding: 1rem;
-		box-shadow: 0 10px 30px rgba(238, 111, 227, 0.6), 0 0 20px rgba(255,20,147,0.06) inset;
+		box-shadow: 0 10px 30px rgba(243, 61, 228, 0.6), 0 0 20px rgba(255,20,147,0.06) inset;
 		border: 1px solid rgba(255,20,147,0.06);
 		display: flex;
 		flex-direction: column;
