@@ -350,6 +350,22 @@ session_start();
     object-fit: cover;
   }
 
+  .icono-usuario {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    overflow: hidden;
+    font-size: 1.1rem;
+  }
+
+  .icono-usuario .avatar-fallback {
+    display: none;
+  }
+
   </style>
 </head>
 <body class="inicio">
@@ -380,11 +396,14 @@ if (empty($nombre_usuario) && !empty($_SESSION['nombre'])) {
 
 $foto_usuario_url = null;
 if (!empty($foto_usuario)) {
-    $foto_limpia = ltrim((string) $foto_usuario, '/');
-    if (str_starts_with($foto_limpia, 'imagenes/usuarios/')) {
-        $foto_usuario_url = $foto_limpia;
+    if (filter_var($foto_usuario, FILTER_VALIDATE_URL)) {
+        $foto_usuario_url = $foto_usuario;
     } else {
-        $foto_usuario_url = 'imagenes/usuarios/' . basename($foto_limpia);
+        $foto_limpia = ltrim((string) $foto_usuario, '/');
+        $ruta_local = __DIR__ . '/../../imagenes/usuarios/' . basename($foto_limpia);
+        if (is_file($ruta_local)) {
+            $foto_usuario_url = 'imagenes/usuarios/' . basename($foto_limpia);
+        }
     }
 }
 ?>
@@ -410,12 +429,13 @@ if (!empty($foto_usuario)) {
 <div class="user-menu">
  <div class="user-button" onclick="toggleMenu()">
 
-   <div class="icono-usuario">
-    <?php if (!empty($foto_usuario_url)): ?>
-        <img src="<?= htmlspecialchars($foto_usuario_url) ?>" class="foto-usuario" alt="Foto usuario">
-    <?php else: ?>
-        👤
-    <?php endif; ?>
+	   <div class="icono-usuario">
+	    <?php if (!empty($foto_usuario_url)): ?>
+	        <img src="<?= htmlspecialchars($foto_usuario_url) ?>" class="foto-usuario" alt="Foto usuario" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+	        <span class="avatar-fallback" aria-hidden="true">👤</span>
+	    <?php else: ?>
+	        <span class="avatar-fallback" style="display:grid" aria-hidden="true">👤</span>
+	    <?php endif; ?>
 </div>
 
 <div class="texto-usuario">

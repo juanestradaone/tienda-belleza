@@ -3,10 +3,7 @@ session_start();
 require __DIR__ . '/../Config/conexion.php';
 
 if (!isset($_SESSION['usuario'])) {
-    echo "<script>
-            alert('⚠️ Debes iniciar sesión para ver tu carrito');
-            window.location.href = 'index.php';
-          </script>";
+    header('Location: index.php');
     exit();
 }
 
@@ -282,6 +279,9 @@ $productos = $stmt->get_result();
 <script>
 $(document).ready(function() {
 
+    // Evita popups de confirmación del navegador en esta vista
+    window.confirm = function() { return true; };
+
     // Aumentar cantidad
     $('.mas').click(function() {
         const fila = $(this).closest('tr');
@@ -304,11 +304,9 @@ $(document).ready(function() {
     $('.eliminar').click(function() {
         const fila = $(this).closest('tr');
         const idProducto = fila.data('id');
-        if (confirm('¿Seguro que deseas eliminar este producto?')) {
-            $.post('actualizar_carrito.php', {accion: 'eliminar', id_producto: idProducto}, function() {
-                location.reload();
-            });
-        }
+        $.post('actualizar_carrito.php', {accion: 'eliminar', id_producto: idProducto}, function() {
+            location.reload();
+        });
     });
 
 });

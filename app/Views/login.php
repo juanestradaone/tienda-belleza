@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nombre']  = $user['nombre'];
             $_SESSION['rol']     = $user['rol'];
 
-            header("Location: inicio.php"); 
+            header("Location: bienvenido.php"); 
             exit;
 
         } else {
@@ -157,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      data-client_id="1037951440740-1kv55223vkl0ikag5999c0bsfdrrui6n.apps.googleusercontent.com"
      data-context="signin"
      data-ux_mode="redirect"
-     data-login_uri="http://localhost/tienda-belleza/google_callback.php"
+     data-login_uri="google_callback.php"
      data-auto_prompt="false">
 </div>
 
