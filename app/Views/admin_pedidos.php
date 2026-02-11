@@ -441,6 +441,7 @@ if (!empty($parametros)) {
 
 
         .details-toggle {
+            margin-top: 10px;
             background: transparent;
             border: 1px solid rgba(255, 105, 180, 0.45);
         }
