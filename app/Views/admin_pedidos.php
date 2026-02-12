@@ -193,7 +193,7 @@ if ($busqueda !== '') {
 
 $where_sql = $condiciones ? ' WHERE ' . implode(' AND ', $condiciones) : '';
 
-$sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion,
+$sql = "SELECT o.id_orden, o.fecha_compra, o.total, o.estado, o.id_direccion, o.id_carrito,
                " . ($tiene_archivado ? 'o.archivado,' : '0 AS archivado,') . "
                u.nombre, u.apellido, u.email, u.telefono,
                e.metodo_envio, {$columna_costo},
@@ -439,6 +439,83 @@ if (!empty($parametros)) {
             background: linear-gradient(135deg, #4b5563, #1f2937);
         }
 
+
+        .details-toggle {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid rgba(255, 105, 180, 0.45);
+        }
+
+        .details-toggle:hover {
+            background: rgba(255, 105, 180, 0.18);
+        }
+
+        .order-details {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            display: none;
+        }
+
+        .order-details.open {
+            display: block;
+        }
+
+        .detail-item {
+            display: grid;
+            grid-template-columns: 72px 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-image {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.06);
+            display: grid;
+            place-items: center;
+            color: #bfbfbf;
+            font-size: 0.75rem;
+        }
+
+        .detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-name {
+            font-weight: 600;
+        }
+
+        .detail-meta {
+            color: #cfcfcf;
+            font-size: 0.9rem;
+        }
+
+        .detail-price {
+            text-align: right;
+            font-weight: 600;
+            color: #ffd0e8;
+        }
+
+        .details-total {
+            margin-top: 10px;
+            text-align: right;
+            color: #ff9bd0;
+            font-weight: 700;
+        }
+
         @media (max-width: 980px) {
             .filters form {
                 grid-template-columns: 1fr;
@@ -510,6 +587,33 @@ if (!empty($parametros)) {
                     }
                     $link_whatsapp = 'https://wa.me/' . $telefono . '?text=' . urlencode($mensaje);
                 }
+
+                $productos_orden = [];
+                $total_items = 0;
+                if (!empty($row['id_carrito'])) {
+                    $stmtProductos = $conn->prepare("
+                        SELECT dc.id_producto, dc.cantidad, dc.precio_unitario,
+                               p.nombre_producto, p.precio_producto, p.imagen
+                        FROM detalle_carrito dc
+                        LEFT JOIN productos p ON dc.id_producto = p.id_producto
+                        WHERE dc.id_carrito = ?
+                    " );
+                    if ($stmtProductos) {
+                        $id_carrito = (int) $row['id_carrito'];
+                        $stmtProductos->bind_param('i', $id_carrito);
+                        $stmtProductos->execute();
+                        $resProductos = $stmtProductos->get_result();
+                        $productos_orden = $resProductos ? $resProductos->fetch_all(MYSQLI_ASSOC) : [];
+                        $stmtProductos->close();
+
+                        foreach ($productos_orden as $producto) {
+                            $precio_unitario = $producto['precio_unitario'] !== null
+                                ? (float) $producto['precio_unitario']
+                                : (float) $producto['precio_producto'];
+                            $total_items += $precio_unitario * (int) $producto['cantidad'];
+                        }
+                    }
+                }
             ?>
             <article class="card">
                 <div class="card-header">
@@ -536,6 +640,40 @@ if (!empty($parametros)) {
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
+
+                <button type="button" class="details-toggle" data-target="detalle-<?= intval($row['id_orden']) ?>">Ver detalles del pedido</button>
+
+                <div id="detalle-<?= intval($row['id_orden']) ?>" class="order-details">
+                    <?php if (empty($productos_orden)): ?>
+                        <p class="meta">No hay productos registrados para este pedido.</p>
+                    <?php else: ?>
+                        <?php foreach ($productos_orden as $producto): ?>
+                            <?php
+                                $cantidad = (int) $producto['cantidad'];
+                                $precio_unitario = $producto['precio_unitario'] !== null
+                                    ? (float) $producto['precio_unitario']
+                                    : (float) $producto['precio_producto'];
+                                $subtotal = $precio_unitario * $cantidad;
+                                $imagen = !empty($producto['imagen']) ? 'uploads/' . $producto['imagen'] : null;
+                            ?>
+                            <div class="detail-item">
+                                <div class="detail-image">
+                                    <?php if ($imagen): ?>
+                                        <img src="<?= htmlspecialchars($imagen) ?>" alt="<?= htmlspecialchars($producto['nombre_producto'] ?? 'Producto') ?>">
+                                    <?php else: ?>
+                                        <span>Sin imagen</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="detail-name"><?= htmlspecialchars($producto['nombre_producto'] ?? 'Producto') ?></div>
+                                    <div class="detail-meta">Cantidad: <?= $cantidad ?> · Precio unitario: $<?= number_format($precio_unitario, 0, ',', '.') ?></div>
+                                </div>
+                                <div class="detail-price">$<?= number_format($subtotal, 0, ',', '.') ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                        <div class="details-total">Total de productos: $<?= number_format($total_items, 0, ',', '.') ?></div>
+                    <?php endif; ?>
+                </div>
 
                 <form method="POST" action="">
                     <input type="hidden" name="accion" value="estado">
@@ -585,5 +723,19 @@ if (!empty($parametros)) {
 <div style="text-align:center;">
     <a class="back-link" href="tienda.php">⬅ Volver a la tienda</a>
 </div>
+
+<script>
+    document.querySelectorAll('.details-toggle').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var targetId = button.getAttribute('data-target');
+            var panel = document.getElementById(targetId);
+            if (!panel) return;
+            panel.classList.toggle('open');
+            button.textContent = panel.classList.contains('open')
+                ? 'Ocultar detalles del pedido'
+                : 'Ver detalles del pedido';
+        });
+    });
+</script>
 </body>
 </html>

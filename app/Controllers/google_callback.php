@@ -16,7 +16,7 @@ $email = $userData["email"];
 $foto = $userData["picture"]; // URL de Google
 
 // Buscar usuario existente
-$stmt = $conn->prepare("SELECT id_usuario, nombre, email, foto FROM usuarios WHERE email = ?");
+$stmt = $conn->prepare("SELECT id_usuario, nombre, email, foto, rol FROM usuarios WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -29,6 +29,7 @@ if ($result->num_rows > 0) {
     $_SESSION["usuario"] = $row["id_usuario"];
     $_SESSION["nombre"]  = $row["nombre"];
     $_SESSION["email"]   = $row["email"];
+    $_SESSION["rol"]     = $row["rol"];
 
     // ⚠ ACTUALIZAR FOTO SI ESTA VACÍA O CAMBIÓ
     if (empty($row["foto"]) || $row["foto"] !== $foto) {
@@ -56,6 +57,7 @@ if ($result->num_rows > 0) {
     $_SESSION["usuario"] = $id_nuevo;
     $_SESSION["nombre"]  = $nombre;
     $_SESSION["email"]   = $email;
+    $_SESSION["rol"]     = "cliente";
     $_SESSION["foto"]    = $foto;
 }
 
