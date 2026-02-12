@@ -69,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" name="email" placeholder="Correo electrónico" required />
             <input type="password" name="password" placeholder="Contraseña" required />
 
+            <p style="margin:8px 0 0 0;"><a href="#recuperar" style="color:#ff69b4;font-weight:600;text-decoration:none;">¿Olvidaste tu contraseña?</a></p>
+
             <button type="submit">Ingresar</button>
 
             <!-- BOTÓN GOOGLE LOGIN -->

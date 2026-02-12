@@ -511,7 +511,7 @@ function toggleMenu() {
 		<div class="map-card">
 			<h3 style="color:#fff; margin:0 0 0.6rem 0;">Nuestra ubicación</h3>
 			<div class="map-wrapper">
-				<iframe src="https://www.google.com/maps?q=4.442859439867629,-75.20244994875287&z=17&output=embed" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+				<iframe src="https://www.google.com/maps?q=4.448430936991095,-75.15529974951458&z=17&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 			</div>
 		</div>
 	</section>
