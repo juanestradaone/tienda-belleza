@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-02-2026 a las 13:43:15
+-- Tiempo de generación: 17-02-2026 a las 14:03:28
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -54,7 +54,8 @@ INSERT INTO `carrito` (`id_carrito`, `id_usuario`, `fecha_creacion`, `fecha_actu
 (12, 3, '2025-11-17 22:53:17', '2025-11-17 22:54:00', ''),
 (13, 3, '2025-11-17 22:54:02', '2025-11-17 23:05:33', ''),
 (14, 3, '2025-11-17 23:06:07', '2025-11-17 23:06:07', 'activo'),
-(15, 5, '2025-11-25 08:29:15', '2025-11-25 08:29:15', 'activo');
+(15, 5, '2025-11-25 08:29:15', '2025-11-25 08:29:15', 'activo'),
+(16, 9, '2026-02-05 06:30:20', '2026-02-05 06:30:20', 'activo');
 
 -- --------------------------------------------------------
 
@@ -90,7 +91,8 @@ CREATE TABLE `detalle_carrito` (
 INSERT INTO `detalle_carrito` (`id_detalle`, `id_carrito`, `id_producto`, `cantidad`, `precio_unitario`) VALUES
 (50, 15, 38, 1, 12000.00),
 (51, 14, 39, 1, 18000.00),
-(52, 14, 38, 1, 12000.00);
+(52, 14, 38, 1, 12000.00),
+(53, 16, 39, 3, 18000.00);
 
 -- --------------------------------------------------------
 
@@ -141,7 +143,8 @@ CREATE TABLE `direcciones_envio` (
 --
 
 INSERT INTO `direcciones_envio` (`id_direccion`, `id_usuario`, `nombre_destinatario`, `direccion`, `ciudad`, `departamento`, `telefono`) VALUES
-(1, 3, 'juan estrada', 'mz c casa 4', 'ibague', 'tolima', '300254789');
+(1, 3, 'juan estrada', 'mz c casa 4', 'ibague', 'tolima', '300254789'),
+(2, 9, 'Paola Barrios', 'mz9casa20elgaitan', 'bogota', 'bogota', '3127595094');
 
 -- --------------------------------------------------------
 
@@ -206,34 +209,35 @@ CREATE TABLE `ordenes` (
   `mp_payment_id` varchar(50) DEFAULT NULL,
   `mp_status` varchar(50) DEFAULT NULL,
   `mp_preference_id` varchar(100) DEFAULT NULL,
-  `id_carrito` int(11) NOT NULL
+  `id_carrito` int(11) NOT NULL,
+  `archivado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `ordenes`
 --
 
-INSERT INTO `ordenes` (`id_orden`, `id_usuario`, `id_direccion`, `fecha_compra`, `total`, `estado`, `mp_payment_id`, `mp_status`, `mp_preference_id`, `id_carrito`) VALUES
-(8, 3, NULL, '2025-11-18 03:04:29', 18000.00, '', NULL, NULL, '2992707168-9d12ee51-9c1b-48a5-a5c7-031e118a3ed6', 4),
-(9, 3, NULL, '2025-11-18 03:08:54', 48000.00, '', NULL, NULL, '2992707168-f5b4d019-49e2-495e-bb81-8d23529dc67f', 5),
-(10, 3, NULL, '2025-11-18 03:12:55', 48000.00, '', NULL, NULL, '2992707168-c36ca6cb-c917-4606-adda-87157717312e', 6),
-(11, 3, NULL, '2025-11-18 03:19:40', 5000.00, '', NULL, NULL, '2992707168-3a849caf-2889-4a3f-8c22-933839340dc8', 7),
-(12, 3, NULL, '2025-11-18 03:21:27', 65000.00, '', NULL, NULL, '2992707168-a7a42c40-9381-4285-87f5-0a2edc6a6c53', 8),
-(13, 3, NULL, '2025-11-18 03:33:42', 48000.00, '', NULL, NULL, '2992707168-57c1a92b-e88a-4240-acdf-87f9f3e4bf5a', 9),
-(14, 3, NULL, '2025-11-18 03:41:32', 115000.00, '', NULL, NULL, '2992707168-c1b46d69-540f-4f09-9fb7-3119cff81f3a', 10),
-(15, 3, NULL, '2025-11-18 03:52:24', 48000.00, '', '133667840095', 'approved', '2992707168-86fda620-4786-4862-8552-a2f09305cd93', 11),
-(16, 3, NULL, '2025-11-18 03:52:57', 48000.00, '', '133667840095', 'approved', '2992707168-869cbc4e-c881-4fe1-a435-f19ce1d062ad', 11),
-(17, 3, NULL, '2025-11-18 03:53:48', 47000.00, '', '133668029165', 'approved', '2992707168-61c2b552-c947-4ef2-acca-a51672cca6f2', 12),
-(18, 3, NULL, '2025-11-18 04:05:15', 48000.00, '', '133668531525', 'approved', '2992707168-6246d10f-4e7d-44d7-90ca-0f9bfe8afba7', 13),
-(19, 3, NULL, '2025-11-19 02:48:51', 96000.00, 'pendiente', NULL, NULL, '2992707168-8701b6a3-5706-41be-9fc5-2ce3503ee012', 14),
-(20, 3, NULL, '2025-11-19 13:57:23', 101000.00, 'pendiente', NULL, NULL, '2992707168-a8444dc7-cf7a-45d0-992b-d526683f848f', 14),
-(21, 3, NULL, '2025-11-19 14:02:04', 101000.00, 'pendiente', NULL, NULL, '2992707168-8611064b-7db0-4041-988a-c93920fb1b1d', 14),
-(22, 3, NULL, '2025-11-19 14:05:36', 101000.00, 'pendiente', NULL, NULL, '2992707168-0ff596ca-bea6-4554-9574-90787f3d467e', 14),
-(23, 3, NULL, '2025-11-19 14:08:32', 101000.00, 'pendiente', NULL, NULL, '2992707168-046b6692-b92e-45a4-9f19-a6ad4ea02c6e', 14),
-(24, 3, NULL, '2025-11-19 14:11:27', 101000.00, 'pendiente', NULL, NULL, '2992707168-49df40e0-c6d3-4266-9352-b3545f37d240', 14),
-(25, 3, NULL, '2025-11-24 11:49:43', 101000.00, 'pendiente', NULL, NULL, '2992707168-e45e5e66-9924-4abe-a582-11530f544a21', 14),
-(26, 3, NULL, '2025-11-24 12:00:50', 101000.00, 'pendiente', NULL, NULL, '2992707168-b2185860-c77e-4e25-b84c-0f5000865ed6', 14),
-(27, 3, 1, '2026-02-03 16:30:58', 40000.00, 'pendiente', NULL, NULL, '2992707168-02349322-626d-4b6c-af51-364af5e2cea5', 14);
+INSERT INTO `ordenes` (`id_orden`, `id_usuario`, `id_direccion`, `fecha_compra`, `total`, `estado`, `mp_payment_id`, `mp_status`, `mp_preference_id`, `id_carrito`, `archivado`) VALUES
+(8, 3, NULL, '2025-11-18 03:04:29', 18000.00, '', NULL, NULL, '2992707168-9d12ee51-9c1b-48a5-a5c7-031e118a3ed6', 4, 0),
+(9, 3, NULL, '2025-11-18 03:08:54', 48000.00, '', NULL, NULL, '2992707168-f5b4d019-49e2-495e-bb81-8d23529dc67f', 5, 0),
+(10, 3, NULL, '2025-11-18 03:12:55', 48000.00, '', NULL, NULL, '2992707168-c36ca6cb-c917-4606-adda-87157717312e', 6, 0),
+(11, 3, NULL, '2025-11-18 03:19:40', 5000.00, '', NULL, NULL, '2992707168-3a849caf-2889-4a3f-8c22-933839340dc8', 7, 0),
+(12, 3, NULL, '2025-11-18 03:21:27', 65000.00, '', NULL, NULL, '2992707168-a7a42c40-9381-4285-87f5-0a2edc6a6c53', 8, 0),
+(13, 3, NULL, '2025-11-18 03:33:42', 48000.00, '', NULL, NULL, '2992707168-57c1a92b-e88a-4240-acdf-87f9f3e4bf5a', 9, 0),
+(14, 3, NULL, '2025-11-18 03:41:32', 115000.00, '', NULL, NULL, '2992707168-c1b46d69-540f-4f09-9fb7-3119cff81f3a', 10, 0),
+(15, 3, NULL, '2025-11-18 03:52:24', 48000.00, '', '133667840095', 'approved', '2992707168-86fda620-4786-4862-8552-a2f09305cd93', 11, 0),
+(16, 3, NULL, '2025-11-18 03:52:57', 48000.00, '', '133667840095', 'approved', '2992707168-869cbc4e-c881-4fe1-a435-f19ce1d062ad', 11, 0),
+(17, 3, NULL, '2025-11-18 03:53:48', 47000.00, '', '133668029165', 'approved', '2992707168-61c2b552-c947-4ef2-acca-a51672cca6f2', 12, 0),
+(18, 3, NULL, '2025-11-18 04:05:15', 48000.00, '', '133668531525', 'approved', '2992707168-6246d10f-4e7d-44d7-90ca-0f9bfe8afba7', 13, 0),
+(19, 3, NULL, '2025-11-19 02:48:51', 96000.00, 'pendiente', NULL, NULL, '2992707168-8701b6a3-5706-41be-9fc5-2ce3503ee012', 14, 0),
+(20, 3, NULL, '2025-11-19 13:57:23', 101000.00, 'pendiente', NULL, NULL, '2992707168-a8444dc7-cf7a-45d0-992b-d526683f848f', 14, 0),
+(21, 3, NULL, '2025-11-19 14:02:04', 101000.00, 'pendiente', NULL, NULL, '2992707168-8611064b-7db0-4041-988a-c93920fb1b1d', 14, 0),
+(22, 3, NULL, '2025-11-19 14:05:36', 101000.00, 'pendiente', NULL, NULL, '2992707168-0ff596ca-bea6-4554-9574-90787f3d467e', 14, 0),
+(23, 3, NULL, '2025-11-19 14:08:32', 101000.00, 'pendiente', NULL, NULL, '2992707168-046b6692-b92e-45a4-9f19-a6ad4ea02c6e', 14, 0),
+(24, 3, NULL, '2025-11-19 14:11:27', 101000.00, 'pendiente', NULL, NULL, '2992707168-49df40e0-c6d3-4266-9352-b3545f37d240', 14, 0),
+(25, 3, NULL, '2025-11-24 11:49:43', 101000.00, 'pendiente', NULL, NULL, '2992707168-e45e5e66-9924-4abe-a582-11530f544a21', 14, 0),
+(26, 3, NULL, '2025-11-24 12:00:50', 101000.00, 'entregado', NULL, NULL, '2992707168-b2185860-c77e-4e25-b84c-0f5000865ed6', 14, 1),
+(27, 3, 1, '2026-02-03 16:30:58', 40000.00, 'cancelado', NULL, NULL, '2992707168-02349322-626d-4b6c-af51-364af5e2cea5', 14, 0);
 
 -- --------------------------------------------------------
 
@@ -268,6 +272,20 @@ CREATE TABLE `pagos_procesados` (
 
 INSERT INTO `pagos_procesados` (`id`, `payment_id`, `fecha`) VALUES
 (1, '133665582129', '2025-11-18 03:04:45');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `password_resets`
+--
+
+CREATE TABLE `password_resets` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(128) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -333,6 +351,7 @@ CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `apellido` varchar(100) NOT NULL,
+  `apodo` varchar(100) DEFAULT NULL,
   `direccion` varchar(300) DEFAULT NULL,
   `email` varchar(150) NOT NULL,
   `telefono` varchar(25) DEFAULT NULL,
@@ -341,18 +360,21 @@ CREATE TABLE `usuarios` (
   `rol` enum('cliente','admin') DEFAULT 'cliente',
   `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp(),
   `google_id` varchar(100) DEFAULT NULL,
-  `foto` varchar(255) DEFAULT NULL
+  `foto` varchar(255) DEFAULT NULL,
+  `codigo_recuperacion` varchar(6) DEFAULT NULL,
+  `codigo_expira` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `direccion`, `email`, `telefono`, `contrasena`, `tipo_pago`, `rol`, `fecha_registro`, `google_id`, `foto`) VALUES
-(3, 'juan', 'estrada', 'mz c casa 4', 'juanestradaone@gmail.com', '300254789', '$2y$10$i9UfchU67aAGMowgfps2Vu.aPBd9YFgvD6ixNlp4FSENUZm0JHPu.', NULL, 'admin', '2025-10-13 17:18:29', NULL, NULL),
-(4, 'Juan Estrada', '', NULL, 'juanestebanestr@gmail.com', NULL, '', NULL, 'cliente', '2025-11-24 15:47:39', '108231651079440101724', 'https://lh3.googleusercontent.com/a/ACg8ocImqUoxlUhNEnF3iD_oWbzd0j4L-N6VNpr85_5IioJm5bn8=s96-c'),
-(7, 'Laura', 'Rubio', '', 'lizethrubiorodriguez11@gmail.com', '3148636556', '$2y$10$GXIGejX3ILJ6WJ7c79akI.4JDIlCLHONeAmhx2dafN4CjErBxH36e', NULL, 'admin', '2026-02-04 12:40:16', NULL, NULL),
-(8, 'David Santiago Sandoval tejada', '', NULL, 'sandovaltejadadavidsantiago@gmail.com', NULL, '', NULL, 'admin', '2026-02-04 12:42:04', '100720987940139994888', 'https://lh3.googleusercontent.com/a/ACg8ocIXUccHylB1EbiVrWiDGTV-U1Lu9vgxs-eFIsV7UtAMSdMw_neH=s96-c');
+INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `apodo`, `direccion`, `email`, `telefono`, `contrasena`, `tipo_pago`, `rol`, `fecha_registro`, `google_id`, `foto`, `codigo_recuperacion`, `codigo_expira`) VALUES
+(3, 'juan', 'estrada', NULL, 'mz c casa 4', 'juanestradaone@gmail.com', '300254789', '$2y$10$i9UfchU67aAGMowgfps2Vu.aPBd9YFgvD6ixNlp4FSENUZm0JHPu.', NULL, 'admin', '2025-10-13 17:18:29', NULL, NULL, NULL, NULL),
+(4, 'Juan Estrada', '', NULL, NULL, 'juanestebanestr@gmail.com', NULL, '', NULL, 'cliente', '2025-11-24 15:47:39', '108231651079440101724', 'https://lh3.googleusercontent.com/a/ACg8ocImqUoxlUhNEnF3iD_oWbzd0j4L-N6VNpr85_5IioJm5bn8=s96-c', NULL, NULL),
+(7, 'Laura', 'Rubio', NULL, '', 'lizethrubiorodriguez11@gmail.com', '3148636556', '$2y$10$GXIGejX3ILJ6WJ7c79akI.4JDIlCLHONeAmhx2dafN4CjErBxH36e', NULL, 'admin', '2026-02-04 12:40:16', NULL, NULL, NULL, NULL),
+(8, 'David Santiago Sandoval tejada', '', NULL, NULL, 'sandovaltejadadavidsantiago@gmail.com', NULL, '', NULL, 'admin', '2026-02-04 12:42:04', '100720987940139994888', 'https://lh3.googleusercontent.com/a/ACg8ocIXUccHylB1EbiVrWiDGTV-U1Lu9vgxs-eFIsV7UtAMSdMw_neH=s96-c', NULL, NULL),
+(9, 'Paola', 'Barrios', '', 'mz9casa20elgaitan', 'paolaandreab2007@gmail.com', '3127595094', '$2y$10$.GhkpW8XmiTdZngFSUQWU.X9kZzyoSQNFHH4BExwayCM2hIO02JSW', NULL, 'cliente', '2026-02-05 11:29:57', NULL, '1770723687_avatar_9.jpg', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -457,6 +479,12 @@ ALTER TABLE `pagos_procesados`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `password_resets`
+--
+ALTER TABLE `password_resets`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `productos`
 --
 ALTER TABLE `productos`
@@ -483,7 +511,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `carrito`
 --
 ALTER TABLE `carrito`
-  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `carrito_detalle_historial`
@@ -495,7 +523,7 @@ ALTER TABLE `carrito_detalle_historial`
 -- AUTO_INCREMENT de la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_orden`
@@ -513,7 +541,7 @@ ALTER TABLE `detalle_ventas`
 -- AUTO_INCREMENT de la tabla `direcciones_envio`
 --
 ALTER TABLE `direcciones_envio`
-  MODIFY `id_direccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_direccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `empresa`
@@ -546,6 +574,12 @@ ALTER TABLE `pagos_procesados`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de la tabla `password_resets`
+--
+ALTER TABLE `password_resets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
@@ -555,7 +589,7 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
@@ -568,63 +602,11 @@ ALTER TABLE `ventas`
 --
 
 --
--- Filtros para la tabla `carrito`
---
-ALTER TABLE `carrito`
-  ADD CONSTRAINT `carrito_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
-
---
 -- Filtros para la tabla `detalle_carrito`
 --
 ALTER TABLE `detalle_carrito`
   ADD CONSTRAINT `detalle_carrito_ibfk_1` FOREIGN KEY (`id_carrito`) REFERENCES `carrito` (`id_carrito`),
   ADD CONSTRAINT `detalle_carrito_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
-
---
--- Filtros para la tabla `detalle_orden`
---
-ALTER TABLE `detalle_orden`
-  ADD CONSTRAINT `detalle_orden_ibfk_1` FOREIGN KEY (`id_orden`) REFERENCES `ordenes` (`id_orden`),
-  ADD CONSTRAINT `detalle_orden_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
-
---
--- Filtros para la tabla `detalle_ventas`
---
-ALTER TABLE `detalle_ventas`
-  ADD CONSTRAINT `detalle_ventas_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `ventas` (`id_venta`);
-
---
--- Filtros para la tabla `direcciones_envio`
---
-ALTER TABLE `direcciones_envio`
-  ADD CONSTRAINT `direcciones_envio_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `empresa_productos`
---
-ALTER TABLE `empresa_productos`
-  ADD CONSTRAINT `empresa_productos_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`),
-  ADD CONSTRAINT `empresa_productos_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
-
---
--- Filtros para la tabla `envios`
---
-ALTER TABLE `envios`
-  ADD CONSTRAINT `envios_ibfk_1` FOREIGN KEY (`id_orden`) REFERENCES `ordenes` (`id_orden`);
-
---
--- Filtros para la tabla `ordenes`
---
-ALTER TABLE `ordenes`
-  ADD CONSTRAINT `fk_ordenes_carrito` FOREIGN KEY (`id_carrito`) REFERENCES `carrito` (`id_carrito`),
-  ADD CONSTRAINT `ordenes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `ordenes_ibfk_2` FOREIGN KEY (`id_direccion`) REFERENCES `direcciones_envio` (`id_direccion`);
-
---
--- Filtros para la tabla `pagos`
---
-ALTER TABLE `pagos`
-  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`id_carrito`) REFERENCES `carrito` (`id_carrito`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

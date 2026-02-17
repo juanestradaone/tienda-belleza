@@ -106,14 +106,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
 
         <!-- RECUPERAR -->
-        <form class="formulario" id="recuperar">
+        <form class="formulario" id="recuperar" method="POST" action="enviar_codigo.php">
             <img src="imagenes/logo.jpg" alt="Logo de la tienda" class="logo">
             <h2>Recuperar Contraseña</h2>
-
-            <input type="email" placeholder="Correo registrado" required />
-            <button type="submit">Enviar enlace de recuperación</button>
-
-            <p>Volver a <a href="#login-form">iniciar sesión</a></p>
+            <input type="email" name="email" placeholder="Correo registrado" required />
+            <button type="submit">Enviar Codigo</button>
         </form>
 
     </div>
