@@ -1,5 +1,5 @@
 <?php
-require_once "config/conexion.php";
+require_once "../Config/conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -25,10 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (
             $usuario['codigo_recuperacion'] === $codigo &&
+            !empty($usuario['codigo_expira']) &&
             strtotime($usuario['codigo_expira']) > time()
         ) {
 
-            // Código correcto → redirige a cambiar contraseña
             header("Location: recover_reset.php?email=" . urlencode($email));
             exit();
 
