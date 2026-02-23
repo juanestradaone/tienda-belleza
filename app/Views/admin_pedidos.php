@@ -590,29 +590,48 @@ if (!empty($parametros)) {
 
                 $productos_orden = [];
                 $total_items = 0;
-                if (!empty($row['id_carrito'])) {
-                    $stmtProductos = $conn->prepare("
+
+                // Primero se consulta el detalle oficial de la orden.
+                $stmtProductosOrden = $conn->prepare("
+                    SELECT do.id_producto, do.cantidad, do.precio_unitario,
+                           p.nombre_producto, p.precio_producto, p.imagen
+                    FROM detalle_orden do
+                    LEFT JOIN productos p ON do.id_producto = p.id_producto
+                    WHERE do.id_orden = ?
+                ");
+                if ($stmtProductosOrden) {
+                    $id_orden = (int) $row['id_orden'];
+                    $stmtProductosOrden->bind_param('i', $id_orden);
+                    $stmtProductosOrden->execute();
+                    $resProductosOrden = $stmtProductosOrden->get_result();
+                    $productos_orden = $resProductosOrden ? $resProductosOrden->fetch_all(MYSQLI_ASSOC) : [];
+                    $stmtProductosOrden->close();
+                }
+
+                // Compatibilidad con órdenes antiguas guardadas solo por carrito.
+                if (empty($productos_orden) && !empty($row['id_carrito'])) {
+                    $stmtProductosCarrito = $conn->prepare("
                         SELECT dc.id_producto, dc.cantidad, dc.precio_unitario,
                                p.nombre_producto, p.precio_producto, p.imagen
                         FROM detalle_carrito dc
                         LEFT JOIN productos p ON dc.id_producto = p.id_producto
                         WHERE dc.id_carrito = ?
-                    " );
-                    if ($stmtProductos) {
+                    ");
+                    if ($stmtProductosCarrito) {
                         $id_carrito = (int) $row['id_carrito'];
-                        $stmtProductos->bind_param('i', $id_carrito);
-                        $stmtProductos->execute();
-                        $resProductos = $stmtProductos->get_result();
-                        $productos_orden = $resProductos ? $resProductos->fetch_all(MYSQLI_ASSOC) : [];
-                        $stmtProductos->close();
-
-                        foreach ($productos_orden as $producto) {
-                            $precio_unitario = $producto['precio_unitario'] !== null
-                                ? (float) $producto['precio_unitario']
-                                : (float) $producto['precio_producto'];
-                            $total_items += $precio_unitario * (int) $producto['cantidad'];
-                        }
+                        $stmtProductosCarrito->bind_param('i', $id_carrito);
+                        $stmtProductosCarrito->execute();
+                        $resProductosCarrito = $stmtProductosCarrito->get_result();
+                        $productos_orden = $resProductosCarrito ? $resProductosCarrito->fetch_all(MYSQLI_ASSOC) : [];
+                        $stmtProductosCarrito->close();
                     }
+                }
+
+                foreach ($productos_orden as $producto) {
+                    $precio_unitario = $producto['precio_unitario'] !== null
+                        ? (float) $producto['precio_unitario']
+                        : (float) $producto['precio_producto'];
+                    $total_items += $precio_unitario * (int) $producto['cantidad'];
                 }
             ?>
             <article class="card">
