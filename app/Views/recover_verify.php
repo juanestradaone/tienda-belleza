@@ -1,43 +1,33 @@
 <?php
 require_once "../Config/conexion.php";
+session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+$codigo = trim($_POST['codigo'] ?? '');
 
-    if (empty($_POST['email']) || empty($_POST['codigo'])) {
-        exit("Datos incompletos.");
-    }
-
-    $email = trim($_POST['email']);
-    $codigo = trim($_POST['codigo']);
-
-    $stmt = $conexion->prepare("
-        SELECT codigo_recuperacion, codigo_expira 
-        FROM usuarios 
-        WHERE email = ?
-    ");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1) {
-
-        $usuario = $result->fetch_assoc();
-
-        if (
-            $usuario['codigo_recuperacion'] === $codigo &&
-            !empty($usuario['codigo_expira']) &&
-            strtotime($usuario['codigo_expira']) > time()
-        ) {
-
-            header("Location: recover_reset.php?email=" . urlencode($email));
-            exit();
-
-        } else {
-            echo "Codigo incorrecto o vencido.";
-        }
-
-    } else {
-        echo "Correo no encontrado.";
-    }
+if (empty($codigo)) {
+    exit("ERROR");
 }
+
+$stmt = $conn->prepare("
+    SELECT email, codigo_expira 
+    FROM usuarios 
+    WHERE codigo_recuperacion = ?
+");
+$stmt->bind_param("s", $codigo);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    exit("ERROR");
+}
+
+$data = $result->fetch_assoc();
+
+if (strtotime($data['codigo_expira']) < time()) {
+    exit("ERROR");
+}
+
+$_SESSION['email_recuperacion'] = $data['email'];
+
+echo "OK";
 ?>
