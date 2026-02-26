@@ -319,8 +319,30 @@ h1{
                 $productos = $resP ? $resP->fetch_all(MYSQLI_ASSOC) : [];
                 $stmtP->close();
 
-                // Compatibilidad con órdenes antiguas sin detalle_orden
+                // Compatibilidad con órdenes antiguas sin detalle_orden.
+                // Solo usamos detalle_carrito cuando ese carrito pertenece
+                // de forma única a esta orden para evitar mostrar productos
+                // repetidos o incorrectos entre pedidos diferentes.
+                $carritoUnico = false;
                 if (empty($productos) && !empty($orden['id_carrito'])) {
+                    $idCarrito = intval($orden['id_carrito']);
+
+                    $sqlCarritoUnico = "SELECT COUNT(*) AS total_ordenes FROM ordenes WHERE id_carrito = ?";
+                    $stmtCarritoUnico = $conn->prepare($sqlCarritoUnico);
+                    $stmtCarritoUnico->bind_param("i", $idCarrito);
+                    $stmtCarritoUnico->execute();
+                    $resCarritoUnico = $stmtCarritoUnico->get_result();
+                    $carritoUnico = ($resCarritoUnico && ($rowCarritoUnico = $resCarritoUnico->fetch_assoc()))
+                        ? intval($rowCarritoUnico['total_ordenes']) === 1
+                        : false;
+                    $stmtCarritoUnico->close();
+
+                    if (!$carritoUnico) {
+                        $productos = [];
+                    }
+                }
+
+                if (empty($productos) && !empty($orden['id_carrito']) && $carritoUnico) {
                     $sqlProdCarrito = "
                         SELECT dc.id_detalle, dc.id_producto, dc.cantidad, dc.precio_unitario,
                                p.nombre_producto, p.precio_producto, p.imagen
@@ -329,7 +351,6 @@ h1{
                         WHERE dc.id_carrito = ?
                     ";
                     $stmtPCarrito = $conn->prepare($sqlProdCarrito);
-                    $idCarrito = intval($orden['id_carrito']);
                     $stmtPCarrito->bind_param("i", $idCarrito);
                     $stmtPCarrito->execute();
                     $resPCarrito = $stmtPCarrito->get_result();
