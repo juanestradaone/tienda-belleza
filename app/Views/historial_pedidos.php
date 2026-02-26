@@ -17,33 +17,62 @@ $id_usuario = $_SESSION['usuario'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'repeat' && isset($_POST['confirm']) && $_POST['confirm'] == '1') {
     $order_id = intval($_POST['order_id']);
 
-    // 1) Buscar id_carrito original de la orden
-    $sql = "SELECT id_carrito FROM ordenes WHERE id_orden = ? LIMIT 1";
+    // 1) Verificar que la orden exista y pertenezca al usuario autenticado
+    $sql = "SELECT id_carrito FROM ordenes WHERE id_orden = ? AND id_usuario = ? LIMIT 1";
     $stm = $conn->prepare($sql);
-    $stm->bind_param("i", $order_id);
+    $stm->bind_param("ii", $order_id, $id_usuario);
     $stm->execute();
-    $stm->bind_result($original_carrito);
-    $stm->fetch();
+    $resOrden = $stm->get_result();
+    $ordenData = $resOrden ? $resOrden->fetch_assoc() : null;
     $stm->close();
 
-    if (!$original_carrito) {
-        // No existe la orden: redirigimos con error (puedes adaptar)
+    if (!$ordenData) {
         header("Location: historial_pedidos.php?repetido=0&error=1");
         exit;
     }
 
-    // 2) Obtener items del carrito original (detalle_carrito)
+    $original_carrito = !empty($ordenData['id_carrito']) ? intval($ordenData['id_carrito']) : 0;
+
+    // 2) Obtener items del pedido exacto (fuente principal: detalle_orden)
     $sql = "
-        SELECT dc.id_producto, dc.cantidad, dc.precio_unitario
-        FROM detalle_carrito dc
-        WHERE dc.id_carrito = ?
+        SELECT do.id_producto, do.cantidad, do.precio_unitario
+        FROM detalle_orden do
+        WHERE do.id_orden = ?
     ";
     $stm = $conn->prepare($sql);
-    $stm->bind_param("i", $original_carrito);
+    $stm->bind_param("i", $order_id);
     $stm->execute();
     $resItems = $stm->get_result();
-    $items = $resItems->fetch_all(MYSQLI_ASSOC);
+    $items = $resItems ? $resItems->fetch_all(MYSQLI_ASSOC) : [];
     $stm->close();
+
+    // Compatibilidad para órdenes antiguas sin detalle_orden:
+    // usar detalle_carrito solo si ese carrito pertenece a UNA sola orden.
+    if (empty($items) && $original_carrito > 0) {
+        $sql = "SELECT COUNT(*) AS total_ordenes FROM ordenes WHERE id_carrito = ?";
+        $stm = $conn->prepare($sql);
+        $stm->bind_param("i", $original_carrito);
+        $stm->execute();
+        $resCount = $stm->get_result();
+        $countData = $resCount ? $resCount->fetch_assoc() : null;
+        $stm->close();
+
+        $carritoUnico = $countData && intval($countData['total_ordenes']) === 1;
+
+        if ($carritoUnico) {
+            $sql = "
+                SELECT dc.id_producto, dc.cantidad, dc.precio_unitario
+                FROM detalle_carrito dc
+                WHERE dc.id_carrito = ?
+            ";
+            $stm = $conn->prepare($sql);
+            $stm->bind_param("i", $original_carrito);
+            $stm->execute();
+            $resItems = $stm->get_result();
+            $items = $resItems ? $resItems->fetch_all(MYSQLI_ASSOC) : [];
+            $stm->close();
+        }
+    }
 
     if (empty($items)) {
         header("Location: historial_pedidos.php?repetido=0&empty=1");
@@ -75,6 +104,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $qty = intval($it['cantidad']);
         $price_unit = $it['precio_unitario'] !== null ? floatval($it['precio_unitario']) : null;
 
+        if ($pid <= 0 || $qty <= 0) {
+            continue;
+        }
+
         // Verificar si ya existe el producto en el carrito activo
         $sql = "SELECT id_detalle, cantidad FROM detalle_carrito WHERE id_carrito = ? AND id_producto = ? LIMIT 1";
         $stm = $conn->prepare($sql);
@@ -90,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if ($price_unit !== null) {
                 $sql = "UPDATE detalle_carrito SET cantidad = ?, precio_unitario = ? WHERE id_detalle = ?";
                 $stm = $conn->prepare($sql);
-                $stm->bind_param("dii", $new_qty, $price_unit, $existing_detalle);
+                $stm->bind_param("idi", $new_qty, $price_unit, $existing_detalle);
             } else {
                 $sql = "UPDATE detalle_carrito SET cantidad = ? WHERE id_detalle = ?";
                 $stm = $conn->prepare($sql);
