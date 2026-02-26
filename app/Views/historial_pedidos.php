@@ -303,20 +303,39 @@ h1{
 
         <?php foreach ($ordenes as $orden): ?>
             <?php
-                // Obtener productos de la orden (detalle_carrito)
+                // Obtener productos guardados en el detalle oficial de la orden
                 $sqlProd = "
-                    SELECT dc.id_detalle, dc.id_producto, dc.cantidad, dc.precio_unitario,
+                    SELECT do.id_detalle, do.id_producto, do.cantidad, do.precio_unitario,
                            p.nombre_producto, p.precio_producto, p.imagen
-                    FROM detalle_carrito dc
-                    LEFT JOIN productos p ON dc.id_producto = p.id_producto
-                    WHERE dc.id_carrito = ?
+                    FROM detalle_orden do
+                    LEFT JOIN productos p ON do.id_producto = p.id_producto
+                    WHERE do.id_orden = ?
                 ";
                 $stmtP = $conn->prepare($sqlProd);
-                $stmtP->bind_param("i", $orden['id_carrito']);
+                $idOrden = intval($orden['id_orden']);
+                $stmtP->bind_param("i", $idOrden);
                 $stmtP->execute();
                 $resP = $stmtP->get_result();
-                $productos = $resP->fetch_all(MYSQLI_ASSOC);
+                $productos = $resP ? $resP->fetch_all(MYSQLI_ASSOC) : [];
                 $stmtP->close();
+
+                // Compatibilidad con órdenes antiguas sin detalle_orden
+                if (empty($productos) && !empty($orden['id_carrito'])) {
+                    $sqlProdCarrito = "
+                        SELECT dc.id_detalle, dc.id_producto, dc.cantidad, dc.precio_unitario,
+                               p.nombre_producto, p.precio_producto, p.imagen
+                        FROM detalle_carrito dc
+                        LEFT JOIN productos p ON dc.id_producto = p.id_producto
+                        WHERE dc.id_carrito = ?
+                    ";
+                    $stmtPCarrito = $conn->prepare($sqlProdCarrito);
+                    $idCarrito = intval($orden['id_carrito']);
+                    $stmtPCarrito->bind_param("i", $idCarrito);
+                    $stmtPCarrito->execute();
+                    $resPCarrito = $stmtPCarrito->get_result();
+                    $productos = $resPCarrito ? $resPCarrito->fetch_all(MYSQLI_ASSOC) : [];
+                    $stmtPCarrito->close();
+                }
 
                 // calcular total mostrado (en caso quieras mostrar por seguridad)
                 $calc_total = 0;

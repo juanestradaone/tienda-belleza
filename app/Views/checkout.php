@@ -53,7 +53,7 @@ if (!$id_carrito) {
 // 2️⃣ OBTENER DETALLES DEL CARRITO
 // ===============================
 $sql = "
-    SELECT dc.cantidad, dc.precio_unitario, p.nombre_producto
+    SELECT dc.id_producto, dc.cantidad, dc.precio_unitario, p.nombre_producto
     FROM detalle_carrito dc
     INNER JOIN productos p ON p.id_producto = dc.id_producto
     WHERE dc.id_carrito = ?
@@ -72,6 +72,7 @@ while ($row = $result->fetch_assoc()) {
     $total += $subtotal;
 
     $items[] = [
+        "id_producto" => intval($row["id_producto"]),
         "title" => $row["nombre_producto"],
         "quantity" => intval($row["cantidad"]),
         "unit_price" => floatval($row["precio_unitario"]),
@@ -220,6 +221,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $id_orden = $stmt->insert_id;
         $stmt->close();
+
+        // Guardar snapshot de productos comprados para historial de pedidos
+        $stmtDetalleOrden = $conn->prepare(
+            "INSERT INTO detalle_orden (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)"
+        );
+
+        if ($stmtDetalleOrden) {
+            foreach ($items as $item) {
+                $id_producto = (int) ($item['id_producto'] ?? 0);
+                $cantidad_item = (int) ($item['quantity'] ?? 0);
+                $precio_item = (float) ($item['unit_price'] ?? 0);
+
+                if ($id_producto <= 0 || $cantidad_item <= 0) {
+                    continue;
+                }
+
+                $stmtDetalleOrden->bind_param("iiid", $id_orden, $id_producto, $cantidad_item, $precio_item);
+                $stmtDetalleOrden->execute();
+            }
+
+            $stmtDetalleOrden->close();
+        }
 
         // ===============================
         // 4️⃣.1 GUARDAR DATOS DE ENVÍO
