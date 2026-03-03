@@ -542,6 +542,7 @@ if (!$result) {
         <a href="historial_pedidos.php"> Historial de pedidos</a>
         <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
             <a href="admin_pedidos.php">🧭 Admin pedidos</a>
+            <a href="admin/agregar_producto.php">➕ Agregar producto</a>
         <?php endif; ?>
         <a href="carrito.php" class="carrito-btn">
             🛒 Carrito

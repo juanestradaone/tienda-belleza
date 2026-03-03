@@ -454,6 +454,7 @@ if (!empty($foto_usuario)) {
         <a href="ayuda.php">❓ Ayuda</a>
         <?php if ($es_admin): ?>
             <a href="admin_pedidos.php">🧭 Admin pedidos</a>
+            <a href="admin/agregar_producto.php">➕ Agregar producto</a>
         <?php endif; ?>
 
         <?php if ($nombre_usuario): ?>
