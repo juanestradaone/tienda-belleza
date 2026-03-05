@@ -320,6 +320,44 @@ if (!$result) {
         transition: all 0.3s ease;
     }
 
+    .admin-actions {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.6rem;
+    }
+
+    .btn-admin {
+        flex: 1;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-editar {
+        background: #ffc107;
+        color: #111;
+    }
+
+    .btn-editar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+    }
+
+    .btn-eliminar {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .btn-eliminar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(220, 53, 69, 0.65);
+    }
+
     .btn-agregar:hover {
         background: linear-gradient(135deg, #ff69b4, #ff1493);
         box-shadow: 0 0 20px #ff69b4;
@@ -604,6 +642,15 @@ if (!$result) {
                             <input type="hidden" name="cantidad" value="1">
                             <button type="submit" class="btn-agregar">🛒 Agregar al Carrito</button>
                         </form>
+                        <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
+                            <div class="admin-actions">
+                                <a class="btn-admin btn-editar" href="admin/editar_producto.php?id=<?php echo (int)$row['id_producto']; ?>">✏️ Editar</a>
+                                <form method="POST" action="admin/eliminar_producto.php" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');" style="flex:1;">
+                                    <input type="hidden" name="id_producto" value="<?php echo (int)$row['id_producto']; ?>">
+                                    <button type="submit" class="btn-admin btn-eliminar">🗑️ Eliminar</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endwhile; ?>
