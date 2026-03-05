@@ -1,14 +1,14 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario']) || (($_SESSION['rol'] ?? '') !== 'admin')) {
-    header('Location: ../../index.php');
+    header('Location: ../index.php');
     exit;
 }
 
 require __DIR__ . '/../../Config/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../../tienda.php');
+    header('Location: ../tienda.php');
     exit;
 }
 
@@ -58,7 +58,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param('sdisssi', $nombre, $precio, $cantidad, $categoria, $descripcion, $imagenFinal, $id);
 
 if ($stmt->execute()) {
-    echo "<script>alert('✅ Producto actualizado correctamente'); window.location.href='../../tienda.php';</script>";
+    echo "<script>alert('✅ Producto actualizado correctamente'); window.location.href='../tienda.php';</script>";
     exit;
 }
 
