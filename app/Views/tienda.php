@@ -339,23 +339,36 @@ if (!$result) {
     }
 
     .btn-editar {
-        background: #ffc107;
-        color: #111;
+        background: linear-gradient(135deg, #b33fff, #ff69b4);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-editar:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+        box-shadow: 0 0 14px rgba(255, 105, 180, 0.6);
     }
 
     .btn-eliminar {
-        background: #dc3545;
+        background: linear-gradient(135deg, #7a1f5c, #ff1493);
         color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .btn-eliminar:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0 12px rgba(220, 53, 69, 0.65);
+        box-shadow: 0 0 14px rgba(255, 20, 147, 0.65);
+    }
+
+    .stock-agotado {
+        margin-top: 0.7rem;
+        color: #f8cde6;
+        font-size: 0.88rem;
+        background: rgba(255, 105, 180, 0.12);
+        border: 1px solid rgba(255, 105, 180, 0.35);
+        border-radius: 8px;
+        padding: 0.45rem 0.6rem;
+        text-align: center;
     }
 
     .btn-agregar:hover {
@@ -547,6 +560,15 @@ if (!$result) {
     animation: notiIn 0.4s forwards, notiOut 0.4s forwards 1.8s;
     }
 
+
+    .notification-warning {
+    background: rgba(255, 105, 180, 0.22);
+    border: 1px solid rgba(255, 105, 180, 0.65);
+    color: #ffdff1;
+    box-shadow: 0 0 16px rgba(255, 105, 180, 0.5);
+    backdrop-filter: blur(2px);
+    }
+
     /* Animación de entrada */
     @keyframes notiIn {
     to {
@@ -637,11 +659,14 @@ if (!$result) {
                         <div class="precio-seccion">
                             <span class="precio-actual">$<?php echo number_format($row['precio_producto'], 0, ',', '.'); ?></span>
                         </div>
-                        <form method="POST" action="agregar_carrito.php" class="form-agregar">
+                        <form method="POST" action="agregar_carrito.php" class="form-agregar" data-stock="<?php echo (int)$row['cantidad_disponible']; ?>">
                             <input type="hidden" name="id_producto" value="<?php echo $row['id_producto']; ?>">
                             <input type="hidden" name="cantidad" value="1">
-                            <button type="submit" class="btn-agregar">🛒 Agregar al Carrito</button>
+                            <button type="submit" class="btn-agregar<?php echo ((int)$row['cantidad_disponible'] <= 0 ? ' btn-agotado' : ''); ?>">🛒 Agregar al Carrito</button>
                         </form>
+                        <?php if ((int)$row['cantidad_disponible'] <= 0): ?>
+                            <p class="stock-agotado">Producto temporalmente agotado</p>
+                        <?php endif; ?>
                         <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
                             <div class="admin-actions">
                                 <a class="btn-admin btn-editar" href="admin/editar_producto.php?id=<?php echo (int)$row['id_producto']; ?>">✏️ Editar</a>
@@ -723,10 +748,27 @@ if (!$result) {
         });
     }
 
+    function mostrarNotificacion(texto, tipo = 'ok') {
+        const notification = document.createElement('div');
+        notification.className = 'notification' + (tipo === 'warning' ? ' notification-warning' : '');
+        notification.textContent = texto;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
+    }
+
     // Mostrar notificación cuando se agrega al carrito
     document.querySelectorAll('.form-agregar').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const stock = parseInt(this.dataset.stock || '0', 10);
+            if (stock <= 0) {
+                mostrarNotificacion('ℹ️ Este producto está agotado por el momento.', 'warning');
+                return;
+            }
             
           // 🔊 Reproducir sonido — con fallback para navegadores estrictos
            const sonido = document.getElementById('sonido-carrito');
@@ -742,22 +784,13 @@ if (!$result) {
                 });
             }
         }
-            // Crear notificación mejorada
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = '✅ ¡Producto agregado al carrito exitosamente!';
-            document.body.appendChild(notification);
+            mostrarNotificacion('✅ ¡Producto agregado al carrito exitosamente!');
 
             actualizarContador();
             // Enviar formulario
             setTimeout(() => {
                 this.submit();
             }, 300);
-
-            // Eliminar notificación
-            setTimeout(() => {
-                notification.remove();
-            }, 2000);
         });
     });
 document.addEventListener('DOMContentLoaded', function() {

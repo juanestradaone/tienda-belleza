@@ -21,6 +21,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
 
     $id_usuario = $_SESSION['usuario'];
 
+    // Validar stock disponible y estado activo del producto
+    $sql_stock = "SELECT cantidad_disponible, activo FROM productos WHERE id_producto = ? LIMIT 1";
+    $stmt_stock = $conn->prepare($sql_stock);
+    $stmt_stock->bind_param("i", $id_producto);
+    $stmt_stock->execute();
+    $res_stock = $stmt_stock->get_result();
+
+    if ($res_stock->num_rows === 0) {
+        echo "<script>alert('❌ El producto no existe.'); window.location.href = 'tienda.php';</script>";
+        exit;
+    }
+
+    $producto = $res_stock->fetch_assoc();
+    $stock_disponible = (int) $producto['cantidad_disponible'];
+    $activo = (int) $producto['activo'];
+    $stmt_stock->close();
+
+    if ($activo !== 1 || $stock_disponible <= 0) {
+        echo "<script>alert('ℹ️ Este producto está agotado por el momento.'); window.location.href = 'tienda.php';</script>";
+        exit;
+    }
+
+
     // 3️⃣ Buscar si el usuario ya tiene un carrito abierto
     $sql_carrito = "SELECT id_carrito FROM carrito WHERE id_usuario = ? AND estado = 'activo' LIMIT 1";
     $stmt = $conn->prepare($sql_carrito);
@@ -54,6 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
         $detalle = $result_detalle->fetch_assoc();
         $nueva_cantidad = $detalle['cantidad'] + $cantidad;
 
+        if ($nueva_cantidad > $stock_disponible) {
+            echo "<script>alert('ℹ️ Stock insuficiente para agregar más unidades.'); window.location.href = 'tienda.php';</script>";
+            exit;
+        }
+
         $sql_update = "UPDATE detalle_carrito SET cantidad = ? WHERE id_detalle = ?";
         $stmt_upd = $conn->prepare($sql_update);
         $stmt_upd->bind_param("ii", $nueva_cantidad, $detalle['id_detalle']);
@@ -70,6 +98,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_producto'], $_POST[
         if ($result_precio->num_rows > 0) {
             $row_precio = $result_precio->fetch_assoc();
             $precio = $row_precio['precio_producto'];
+
+            if ($cantidad > $stock_disponible) {
+                echo "<script>alert('ℹ️ No hay suficiente stock disponible.'); window.location.href = 'tienda.php';</script>";
+                exit;
+            }
 
             // Insertar producto en detalle_carrito
             $sql_insert = "INSERT INTO detalle_carrito (id_carrito, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
