@@ -1,39 +1,37 @@
 <?php
 require_once "../Config/conexion.php";
+session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    if (empty($_POST['email']) || empty($_POST['nueva_contrasena'])) {
-        exit("Datos incompletos.");
-    }
-
-    $email = trim($_POST['email']);
-    $nueva = trim($_POST['nueva_contrasena']);
-
-    // Verificar que el usuario exista
-    $verificar = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
-    $verificar->bind_param("s", $email);
-    $verificar->execute();
-    $resultado = $verificar->get_result();
-
-    if ($resultado->num_rows !== 1) {
-        exit("Usuario no válido.");
-    }
-
-    // Encriptar contraseña
-    $hash = password_hash($nueva, PASSWORD_DEFAULT);
-
-    $stmt = $conexion->prepare("
-        UPDATE usuarios 
-        SET contrasena = ?, 
-            codigo_recuperacion = NULL,
-            codigo_expira = NULL
-        WHERE email = ?
-    ");
-
-    $stmt->bind_param("ss", $hash, $email);
-    $stmt->execute();
-
-    echo "Contraseña actualizada correctamente.";
+if (!isset($_SESSION['email_recuperacion'])) {
+    header("Location: /tienda-belleza/index.php");
+    exit;
 }
+
+$password = trim($_POST['password'] ?? '');
+
+if (empty($password)) {
+    header("Location: /tienda-belleza/index.php");
+    exit;
+}
+
+$email = $_SESSION['email_recuperacion'];
+
+$hash = password_hash($password, PASSWORD_DEFAULT);
+
+$update = $conn->prepare("
+    UPDATE usuarios 
+    SET contrasena = ?, 
+        codigo_recuperacion = NULL,
+        codigo_expira = NULL
+    WHERE email = ?
+");
+$update->bind_param("ss", $hash, $email);
+$update->execute();
+
+unset($_SESSION['email_recuperacion']);
+session_regenerate_id(true);
+
+// 🔥 Redirección sin mensaje
+header("Location: /tienda-belleza/index.php");
+exit;
 ?>

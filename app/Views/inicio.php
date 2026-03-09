@@ -162,27 +162,68 @@ session_start();
 	}
 
 	/* Carrusel específico adaptado (responsivo) */
+	/* Carrusel específico adaptado (responsivo) */
 	.carousel {
 		position: relative;
 		overflow: hidden;
 		border-radius: 20px;
-		box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+		box-shadow: 0 18px 40px rgba(0,0,0,0.55), 0 0 40px rgba(255,20,147,0.06) inset;
 		margin: 1rem 0 1.5rem 0;
 		--carousel-height: clamp(180px, 40vw, 420px); /* responsivo: mínimo 180px, máximo 420px */
+		border: 1px solid rgba(255,20,147,0.08);
+		background: linear-gradient(180deg, rgba(255,20,147,0.02), rgba(0,0,0,0.02));
 	}
 
-	.carousel-track { display:flex; transition: transform 0.6s ease; will-change: transform; }
-	.carousel-slide { min-width:100%; display:block; }
-	.carousel-slide img { width:100%; height:var(--carousel-height); object-fit:cover; display:block; }
+	/* sutil brillo y viñeta */
+	.carousel::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: radial-gradient(1200px 400px at 10% 10%, rgba(255,255,255,0.03), transparent 20%), linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.22));
+		mix-blend-mode: overlay;
+	}
 
-	/* Controles y botones */
-	.carousel-controls { position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; padding:0 0.5rem; }
-	.carousel-controls button { background: rgba(0,0,0,0.45); color:#fff; border:none; padding:0.6rem 0.9rem; margin:0 0.6rem; border-radius:8px; cursor:pointer; pointer-events:all; font-size:1.4rem; }
+	.carousel::after {
+		/* ligero destello decorativo */
+		content: '';
+		position: absolute;
+		left: -18%;
+		top: -10%;
+		width: 60%;
+		height: 60%;
+		background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0) 40%);
+		transform: rotate(-12deg);
+		pointer-events: none;
+	}
+
+	.carousel-track { display:flex; transition: transform 0.7s cubic-bezier(.2,.9,.2,1); will-change: transform; }
+	.carousel-slide { min-width:100%; display:block; position:relative; overflow:hidden; }
+	.carousel-slide img { width:100%; height:var(--carousel-height); object-fit:cover; display:block; transition: transform 0.9s ease, filter 0.6s ease; transform-origin: center center; }
+
+	/* Overlay suave en cada slide para mejorar legibilidad */
+	.carousel-slide::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.28) 75%);
+		pointer-events: none;
+	}
+
+	/* Controles y botones (frosted, circulares) */
+	.carousel-controls { position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; pointer-events:none; padding:0 0.5rem; z-index:9; }
+	.carousel-controls button { background: linear-gradient(180deg, rgba(17,17,17,0.7), rgba(17,17,17,0.5)); color:#fff; border:none; padding:0.6rem; margin:0 0.6rem; border-radius:50%; width:48px; height:48px; display:grid; place-items:center; cursor:pointer; pointer-events:all; font-size:1.2rem; box-shadow: 0 6px 20px rgba(255,20,147,0.12); transition: transform .18s ease, box-shadow .18s ease; }
+	.carousel-controls button:hover { transform: scale(1.06); box-shadow: 0 10px 30px rgba(255,20,147,0.18); }
 
 	/* Indicadores (puntos) */
-	.carousel-indicators { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; display:flex; gap:8px; z-index: 10; }
-	.carousel-indicators button { width:10px; height:10px; border-radius:50%; border:none; background: rgba(255,255,255,0.45); cursor:pointer; padding:0; }
-	.carousel-indicators button.active { background: linear-gradient(135deg,#ff1493,#ff69b4); box-shadow: 0 0 8px #ff69b4; }
+	.carousel-indicators { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; display:flex; gap:10px; z-index: 10; }
+	.carousel-indicators button { width:12px; height:12px; border-radius:50%; border:none; background: rgba(255,255,255,0.25); cursor:pointer; padding:0; transition: transform .25s ease, background .25s ease, box-shadow .25s ease; }
+	.carousel-indicators button.active { background: linear-gradient(135deg,#ff1493,#ff69b4); box-shadow: 0 6px 18px rgba(255,105,180,0.18); transform: scale(1.18); }
+
+	/* Efecto de zoom suave sólo en dispositivos con hover */
+	@media (hover: hover) {
+		.carousel-slide:hover img { transform: scale(1.03); filter: brightness(1.04) saturate(1.03); }
+	}
 
 	.empresa-info {
 		display: grid;
