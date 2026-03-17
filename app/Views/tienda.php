@@ -322,12 +322,22 @@ if (!$result) {
 
     .admin-actions {
         display: flex;
+        align-items: stretch;
         gap: 0.6rem;
         margin-top: 0.6rem;
     }
 
+    .admin-form {
+        flex: 1;
+        display: flex;
+    }
+
     .btn-admin {
         flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
         border: none;
         border-radius: 8px;
         padding: 0.65rem 0.75rem;
@@ -670,7 +680,7 @@ if (!$result) {
                         <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
                             <div class="admin-actions">
                                 <a class="btn-admin btn-editar" href="admin/editar_producto.php?id=<?php echo (int)$row['id_producto']; ?>">✏️ Editar</a>
-                                <form method="POST" action="admin/eliminar_producto.php" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');" style="flex:1;">
+                                <form method="POST" action="admin/eliminar_producto.php" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');" class="admin-form">
                                     <input type="hidden" name="id_producto" value="<?php echo (int)$row['id_producto']; ?>">
                                     <button type="submit" class="btn-admin btn-eliminar">🗑️ Eliminar</button>
                                 </form>
